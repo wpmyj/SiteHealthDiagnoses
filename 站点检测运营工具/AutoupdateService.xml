@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<updateFiles>
+  <file path="ABCpdf.dll" url="http://localhost:8011/ABCpdf.dll" lastver="7.0.0.8" size="2056136" needRestart="false" version="fc3e358c-c739-457a-9b1d-1edd6f74a9fd" />
+  <file path="AutoSystemHealtyDiagnoses.exe" url="http://localhost:8011/AutoSystemHealtyDiagnoses.exe" lastver="1.0.0.0" size="7680" needRestart="false" version="a268446f-f8dc-4d9a-854b-15d57f7352df" />
+  <file path="AutoSystemHealtyDiagnoses.exe.config" url="http://localhost:8011/AutoSystemHealtyDiagnoses.exe.config" lastver="" size="406" needRestart="false" version="faf00f5f-d5cc-4184-9036-f655dc146991" />
+  <file path="AutoSystemHealtyDiagnoses.pdb" url="http://localhost:8011/AutoSystemHealtyDiagnoses.pdb" lastver="" size="15872" needRestart="false" version="18f2ade2-750b-426d-a8dc-00f0e1e934af" />
+  <file path="HtmlAgilityPack.dll" url="http://localhost:8011/HtmlAgilityPack.dll" lastver="1.4.0.0" size="133120" needRestart="false" version="8284e9be-416a-4359-bbe9-d2ca8c0a1112" />
+  <file path="MongoDB.Bson.dll" url="http://localhost:8011/MongoDB.Bson.dll" lastver="1.3.1.4349" size="293888" needRestart="false" version="c9ef859a-e473-4a9a-b1a9-981532757e3a" />
+  <file path="MongoDB.Bson.pdb" url="http://localhost:8011/MongoDB.Bson.pdb" lastver="" size="1078784" needRestart="false" version="afe474ac-c213-403d-8389-d1f72205d74e" />
+  <file path="MongoDB.Bson.xml" url="http://localhost:8011/MongoDB.Bson.xml" lastver="" size="620069" needRestart="false" version="4230fd65-220e-4ab0-8c5e-1e726bd84bed" />
+  <file path="MongoDB.Driver.dll" url="http://localhost:8011/MongoDB.Driver.dll" lastver="1.3.1.4349" size="226304" needRestart="false" version="2e173451-7bf7-46ed-b2d6-b8b637d1988f" />
+  <file path="MongoDB.Driver.pdb" url="http://localhost:8011/MongoDB.Driver.pdb" lastver="" size="914944" needRestart="false" version="04a89fcf-9608-4990-b618-71b6ba263867" />
+  <file path="MongoDB.Driver.xml" url="http://localhost:8011/MongoDB.Driver.xml" lastver="" size="564240" needRestart="false" version="de8689e0-1127-4597-8ffa-d404bcdb387d" />
+  <file path="MyXls.SL2.dll" url="http://localhost:8011/MyXls.SL2.dll" lastver="1.0.0.0" size="130048" needRestart="false" version="72a28e9f-0fd1-48e1-91d5-46c87539cd88" />
+  <file path="NLog.dll" url="http://localhost:8011/NLog.dll" lastver="1.0.0.505" size="282624" needRestart="false" version="71c0228d-2aad-4122-8f45-cf0b9b368244" />
+  <file path="nlog.dll.nlog" url="http://localhost:8011/nlog.dll.nlog" lastver="" size="2242" needRestart="false" version="14c838f4-f864-4f32-af65-1d0aadf709e8" />
+  <file path="NPOI.dll" url="http://localhost:8011/NPOI.dll" lastver="1.2.5.0" size="1454080" needRestart="false" version="be85b0ed-dbc4-4c01-8580-30fcff19ca0a" />
+  <file path="QiaoxingWebService.dll" url="http://localhost:8011/QiaoxingWebService.dll" lastver="0.0.0.0" size="10240" needRestart="false" version="e1381f3b-f9a9-4ad2-9fe9-58b568ff06a7" />
+  <file path="QXWebSrvPending.dll" url="http://localhost:8011/QXWebSrvPending.dll" lastver="0.0.0.0" size="40960" needRestart="false" version="d5bc9aab-3569-4aa6-b3cb-4836b2bb701e" />
+  <file path="SiteHealthDiagnoses.exe" url="http://localhost:8011/SiteHealthDiagnoses.exe" lastver="1.0.0.0" size="19968" needRestart="false" version="0a2dc305-9ef8-4b4f-ba41-f5a390aa4d1a" />
+  <file path="SiteHealthDiagnoses.exe.config" url="http://localhost:8011/SiteHealthDiagnoses.exe.config" lastver="" size="564" needRestart="false" version="7249abbf-fea6-4f59-ad5f-e4fe63fde89e" />
+  <file path="SiteHealthDiagnoses.pdb" url="http://localhost:8011/SiteHealthDiagnoses.pdb" lastver="" size="36352" needRestart="false" version="08ee9570-e04e-47aa-89de-241df0fc75c3" />
+  <file path="SiteHealthDiagnoses.vshost.exe" url="http://localhost:8011/SiteHealthDiagnoses.vshost.exe" lastver="10.0.30319.1" size="11600" needRestart="false" version="5c469360-c1bd-4318-8e5a-e6a75f097ddb" />
+  <file path="SiteHealthDiagnoses.vshost.exe.config" url="http://localhost:8011/SiteHealthDiagnoses.vshost.exe.config" lastver="" size="564" needRestart="false" version="36692826-566b-43ea-80a0-664e053d752d" />
+  <file path="SiteHealthDiagnoses.vshost.exe.manifest" url="http://localhost:8011/SiteHealthDiagnoses.vshost.exe.manifest" lastver="" size="490" needRestart="false" version="912687b5-9aba-4886-8ccf-c1bd17542969" />
+  <file path="web.config" url="http://localhost:8011/web.config" lastver="" size="1087" needRestart="false" version="14925a0c-92ea-4b21-a518-2b0d08ea4d68" />
+  <file path="Yinhe.MessageSender.dll" url="http://localhost:8011/Yinhe.MessageSender.dll" lastver="1.0.0.0" size="19968" needRestart="false" version="cff60268-6c9c-43d9-a370-283399dfb1be" />
+  <file path="Yinhe.ProcessingCenter.dll" url="http://localhost:8011/Yinhe.ProcessingCenter.dll" lastver="1.0.0.0" size="3168256" needRestart="false" version="456803a1-b436-466c-9500-669cefe61796" />
+  <file path="Yinhe.ProcessingCenter.pdb" url="http://localhost:8011/Yinhe.ProcessingCenter.pdb" lastver="" size="5797376" needRestart="false" version="c4473e45-8f60-41d5-af68-a78437d8d384" />
+  <file path="Yinhe.WebReference.dll" url="http://localhost:8011/Yinhe.WebReference.dll" lastver="1.0.0.0" size="56832" needRestart="false" version="4427110a-68b4-424e-a020-42aa0ba3862c" />
+  <file path="Yinhe.WebReference.pdb" url="http://localhost:8011/Yinhe.WebReference.pdb" lastver="" size="75264" needRestart="false" version="64bef33d-8401-4050-8192-3a04bca9dffd" />
+  <file path="Yinhoo.Framework.dll" url="http://localhost:8011/Yinhoo.Framework.dll" lastver="1.0.0.0" size="25088" needRestart="false" version="511d240e-675e-4653-adec-f8c3dcf6db1b" />
+  <file path="Yinhoo.Utilities.dll" url="http://localhost:8011/Yinhoo.Utilities.dll" lastver="1.0.0.0" size="131584" needRestart="false" version="595aff5c-82f3-4064-a1eb-4e8676ebf65e" />
+  <file path="zxing.dll" url="http://localhost:8011/zxing.dll" lastver="1.0.5000.31779" size="217088" needRestart="false" version="745dbd1e-0fac-474e-a282-15c2d8628475" />
+</updateFiles>

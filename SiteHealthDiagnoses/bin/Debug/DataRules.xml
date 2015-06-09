@@ -1,0 +1,901 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataRules>
+  <Table Name="SysUser" Remark="系统用户表" isLogicDel="true" >
+    <Column Name="userId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="loginName" Remark="登陆名" />
+    <Column Name="loginPwd" Remark="密码" />
+    <Column Name="name" Remark="名称" />
+    <Column Name="picturePath" Remark="用户头像" />
+    <Column Name="status" Remark="用户状态 1:激活,2锁定(无法登陆)" />
+    <Column Name="type" Remark="用户类型：0-系统用户，1-调试用户" />
+    <Column Name="profId" SourceTable="System_Professional" SourceColumn="profId" Remark="用户专业" />
+    <Column Name="emailAddr" Remark="邮件地址" />
+    <Column Name="comPostId" Remark="岗位Id，用于排序，空缺岗位的值为999" />
+    <Column Name="weixin" Remark="微信号" />
+    <Column Name="phoneNumber" Remark="手机号码" />
+    <Column Name="delStatus" Remark="删除状态" />
+  </Table>
+
+  <!--系统参数-->
+  <Table Name="System_Professional" Remark="系统专业" >
+    <Column Name="profId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="专业名称" />
+      <Column Name="workFlowCode" Remark="审批编码" />
+  </Table>
+  <Table Name="System_Stage" Remark="系统阶段" >
+    <Column Name="stageId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="阶段名称" />
+  </Table>
+  <Table Name="System_Type" Remark="系统类型" >
+    <Column Name="typeId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="类型名称" />
+  </Table>
+  <Table Name="System_Pattern" Remark="系统业态" >
+    <Column Name="patternId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="业态名称" />
+    <Column Name="isUse" Remark="是否应用于系统,0不用,1用" />
+  </Table>
+
+  <Table Name="System_Style" Remark="系统风格" >
+    <Column Name="styleId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="风格名称" />
+    <Column Name="isUse" Remark="是否应用于系统,0不用,1用" />
+  </Table>
+  <Table Name="System_Apartment" Remark="系统户型类型" >
+    <Column Name="apartment" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="户型类型" />
+    <Column Name="isUse" Remark="是否应用于系统,0不用,1用" />
+  </Table>
+
+  <!--系统文件-->
+  <Table Name="FileLibrary" Remark="文档表" >
+    <Column Name="fileId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="structId" SourceTable="FileStructure" SourceColumn="structId" Remark="目录编号" />
+    <Column Name="fileTypeId" SourceTable="FileType" SourceColumn="fileTypeId" Remark="文档分类ID" />
+    <Column Name="fileObjId" SourceTable="FileObject" SourceColumn="fileObjId" Remark="文档对象编号" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="ext"  Remark="扩展名" />
+    <Column Name="size"  Remark="大小" />
+    <Column Name="localPath"  Remark="本地路径" />
+    <Column Name="hash"  Remark="哈希" />
+    <Column Name="version"  Remark="版本号" />
+    <Column Name="selectVer"  Remark="选中版本号" />
+    <Column Name="tags"  Remark="标签" />
+    <Column Name="guid"  Remark="GUID" />
+    <Column Name="state"  Remark="状态" />
+    <Column Name="guid2d"  Remark="二维码编码" />
+    <Column Name="thumbPicPath"  Remark="缩略图地址" />
+    <Column Name="isChild"  Remark="是否是子图(0不是,1是)" />
+    <Column Name="parentFileId"  SourceTable="FileLibrary" SourceColumn="fileId" Remark="母图Id,可以为空为0" />
+    <Column Name="archiveNum"  Remark="归档号,0或者空为从未归档,大于0则在" />
+  </Table>
+  <Table Name="FileLibVersion" Remark="文档版本表" >
+    <Column Name="fileVerId" IsPrimary="true" IsIdentity="true" Remark="文件版本编号" />
+    <Column Name="fileId" SourceTable="FileLibrary" SourceColumn="fileId" Remark="文档表" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="ext"  Remark="扩展名" />
+    <Column Name="size"  Remark="大小" />
+    <Column Name="localPath"  Remark="本地路径" />
+    <Column Name="hash"  Remark="哈希" />
+    <Column Name="version"  Remark="版本号" />
+    <Column Name="tags"  Remark="标签" />
+    <Column Name="guid"  Remark="GUID" />
+    <Column Name="thumbPicPath"  Remark="缩略图地址" />
+  </Table>
+  <Table Name="FileStructure" Remark="文档目录结构" >
+    <Column Name="structId" IsPrimary="true" IsIdentity="true" Remark="目录编号" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="nodePid"  Remark="父ID" />
+    <Column Name="localPath"  Remark="本地路径" />
+  </Table>
+  <Table Name="FileType" Remark="文档分类" >
+    <Column Name="fileTypeId" IsPrimary="true" IsIdentity="true" Remark="文档分类" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="nodePid"  Remark="父ID" />
+  </Table>
+  <Table Name="FileObject" Remark="文档对象" >
+    <Column Name="fileObjId" IsPrimary="true" IsIdentity="true" Remark="文档对象编号" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="nodePid"  Remark="父ID" />
+  </Table>
+  <Table Name="FileRelation" Remark="文档关联表" >
+    <Column Name="fileRelId" IsPrimary="true" IsIdentity="true" Remark="文档关联编号" />
+    <Column Name="fileId" SourceTable="FileLibrary" SourceColumn="fileId" Remark="文档表" />
+    <Column Name="structId" SourceTable="FileStructure" SourceColumn="structId" Remark="目录编号" />
+    <Column Name="fileObjId" SourceTable="FileObject" SourceColumn="fileObjId" Remark="文档对象编号" />
+    <Column Name="tableName"  Remark="表名" />
+    <Column Name="keyName"  Remark="主键名" />
+    <Column Name="keyValue"  Remark="主键值" />
+    <Column Name="isFolde"  Remark="是否为文件夹" />
+    <Column Name="isPreDefine"  Remark="是否预定义" />
+    <Column Name="isCover"  Remark="是否封面图" />
+  </Table>
+  <Table Name="FileRelProperty" Remark="文件关联属性" >
+    <Column Name="filePropertyId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="fileRelId" SourceTable="FileRelation" SourceColumn="fileRelId"  Remark="文件关联Id"/>
+    <Column Name="profId" Remark="专业ID" />
+    <Column Name="stageId" Remark="阶段ID" />
+    <Column Name="fileCatId" Remark="类别Id" />
+    <Column Name="docType" Remark="文档类型" />
+    <Column Name="mainfileCatId" Remark="主要文档类别" />
+  </Table>
+  <Table Name="FilePropertyRelation" Remark="文档属性关联表" >
+    <Column Name="filePropRelId" IsPrimary="true" IsIdentity="true" Remark="文档属性关联编号" />
+    <Column Name="fileId" SourceTable="FileLibrary" SourceColumn="fileId" Remark="文档表" />
+    <Column Name="filePropId" SourceTable="FileProperty" SourceColumn="filePropId" Remark="文件属性编号" />
+    <Column Name="propValue"  Remark="属性值" />
+  </Table>
+  <Table Name="FileProperty" Remark="文档属性表" >
+    <Column Name="filePropId" IsPrimary="true" IsIdentity="true" Remark="文档属性编号" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="dataKey"  Remark="标识" />
+    <Column Name="tableName"  Remark="关联来源表" />
+    <Column Name="keyName"  Remark="关联字段名" />
+    <Column Name="showColunm"  Remark="显示关联表字段" />
+    <Column Name="searchCondition"  Remark="查找条件" />
+  </Table>
+  <Table Name="FileObjPropertyRelation" Remark="文档对象属性关联表" >
+    <Column Name="filePropRelId" IsPrimary="true" IsIdentity="true" Remark="文档对象属性关联ID" />
+    <Column Name="fileObjId" SourceTable="FileLibrary" SourceColumn="fileObjId" Remark="文档对象编号" />
+    <Column Name="filePropId" SourceTable="FileProperty" SourceColumn="filePropId" Remark="文件属性编号" />
+  </Table>
+  <Table Name="FileDescription" Remark="文档描述表" >
+    <Column Name="fileDesId" IsPrimary="true" IsIdentity="true" Remark="文档描述表编号" />
+    <Column Name="fileId"  Remark="文件Id" />
+    <Column Name="description"  Remark="描述" />
+  </Table>
+  <Table Name="FileWatiForDelete" Remark="文档回收表" >
+    <Column Name="deletefileId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="ext"  Remark="扩展名" />
+    <Column Name="size"  Remark="大小" />
+    <Column Name="localPath"  Remark="本地路径" />
+    <Column Name="hash"  Remark="哈希" />
+    <Column Name="lastVersion"  Remark="版本号" />
+    <Column Name="tags"  Remark="标签" />
+    <Column Name="state"  Remark="状态" />
+    <Column Name="guid"  Remark="GUID" />
+    <Column Name="thumbPicPath"  Remark="缩略图地址" />
+    <Column Name="tableName"  Remark="表名" />
+    <Column Name="keyName"  Remark="主键名" />
+    <Column Name="keyValue"  Remark="主键值" />
+  </Table>
+  <Table Name="FileArchive" Remark="文件归档">
+    <Column Name="archiveId" IsPrimary="true" IsIdentity="true" Remark="主键"/>
+    <Column Name ="fileId" SourceTable="FileLibrary" SourceColumn="fileId" Remark="文件id"/>
+    <Column Name ="fileVerId" SourceTable="FileLibVersion" SourceColumn="fileVerId" Remark="归档版本"/>
+    <Column Name ="version"  Remark="版本号" />
+    <Column Name ="archiveNum" Remark="归档号"/>
+  </Table>
+  <Table Name="FileAlterRelation" Remark="变更单子图关联表">
+    <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark ="主键"/>
+    <Column Name="alterFileId" SourceTable="FileLibrary" SourceColumn="fileId" Remark="变更单id"/>
+    <Column Name="fileVerId" SourceTable="FileLibVersion" SourceColumn="fileVerId" Remark="图纸版本Id"/>
+  </Table>
+  <!--系统流程-->
+  <Table Name="BusFlowActionType" Remark="动作类型" >
+    <Column Name="actTypeId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="displayName"  Remark="展示名称" />
+  </Table>
+  <Table Name="BusFlowAction" Remark="流程动作" >
+    <Column Name="actId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="actTypeId" SourceTable="BusFlowActionType" SourceColumn="actTypeId" Remark="动作类型" />
+    <Column Name="type"  Remark="动作类型 0代表发起流程 1 会签确认 2通过 3 驳回 4集团驳回 5交办 6 提交 7 结束会签 8退回 9二次会签  10核稿会签11核稿驳回" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="displayName"  Remark="展示名称" />
+  </Table>
+  <Table Name="BusFlowPosition" Remark="流程岗位表" >
+    <Column Name="flowPosId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="orgLevel"  Remark="组织层级(1:集团总部,2:事业部,3:项目部)" />
+    <Column Name="postId" SourceTable="OrgPost" SourceColumn="postId" Remark="部门岗位" />
+    <Column Name="orgId" SourceTable="Organization" SourceColumn="orgId" Remark="组织架构" />
+    <Column Name="isManager"  Remark="1表示为经理等级" />
+    <Column Name="groupId"  Remark="分组id(选择会签部门时方便切换)，取自 BusFlowPosGroup" />
+    <Column Name="order"  Remark="顺序" />
+  </Table>
+  <Table Name="BusFlowPositionUserRel" Remark="人员岗位表" >
+    <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="postId" SourceTable="OrgPost" SourceColumn="postId" Remark="部门岗位冗余" />
+    <Column Name="flowPosId" SourceTable="BusFlowPosition" SourceColumn="postId" Remark="流程岗位冗余" />
+    <Column Name="userId" SourceTable="SysUser" SourceColumn="userId" Remark="用户表" />
+ </Table>
+  
+  <Table Name="BusFlow" Remark="系统流程表" >
+    <Column Name="flowId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="isActive"  Remark="是否激活(0:未激活,1:激活)" />
+    <Column Name="status"  Remark="状态" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="isSelf"  Remark="是否自定义" />
+    <Column Name="isOld"  Remark="是否旧模板" />
+    <Column Name="isGeneral"  Remark="是否通用流程" />
+    <Column Name="isDesignSupplierFlow"  Remark="是否为供应商审批流程（0：非 1：供应商审批流程）" />
+    <Column Name="flowTypeId" SourceTable="FlowType" SourceColumn="flowTypeId"  Remark="流程类型" />
+    <Column Name="srcFlowId"   SourceTable="BusFlow" SourceColumn="flowId" Remark="由哪个流程复制而来" />
+    <Column Name="taskLevelId" SourceTable="XH_DesignManage_ConcernLevel" SourceColumn="levelId" Remark="ZHTZ任务关注等级" />
+  </Table>
+  <Table Name="FlowType" Remark="流程类型">
+    <Column Name="flowTypeId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="tablename"  Remark="类型表名" />
+    <Column Name="keyFiled" Remark="类型值域" />
+    <Column Name="remark"  Remark="流程类型描述" />
+    <Column Name="isDefault"  Remark="是否是默认流程类型 0或空：不是 1：是" />
+    <Column Name="flowTableType"  Remark="流程表单类型，不同类型对应不同的展示" />
+    <Column Name="workflowCode"  Remark="审批类型编号" />
+  </Table>
+  <Table Name="FlowProfession" Remark="流程专业类型">
+    <Column Name="flowProfId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="remark"  Remark="流程类型描述" />
+    <Column Name="workFlowCode"  Remark="专业类型编码" />
+  </Table>
+  <Table Name="FlowArea" Remark="流程分区">
+    <Column Name="flowAreaId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="remark"  Remark="流程类型描述" />
+  </Table>
+  <Table Name="BusFlowStep" Remark="步骤" >
+    <Column Name="stepId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowPosId" SourceTable="BusFlowPosition" SourceColumn="flowPosId" Remark="流程岗位表" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="postId" SourceTable="OrgPost" SourceColumn="postId" Remark="部门岗位冗余" />
+    <Column Name="actTypeId" SourceTable="BusFlowActionType" SourceColumn="actTypeId" Remark="动作类型" />
+    <Column Name="enslavedStepId" Remark="会签岗位选择步骤Id，用于控制启动时候选择会签里面需要进行审批的步骤" />
+    <Column Name="resetCSignStepId" Remark="重启二次会签步骤岗位" />
+    <Column Name="refuseStepId" Remark="驳回步骤Id" />
+    <Column Name="jumpStepId" Remark="直接跳转步骤Id" />
+    <Column Name="canImComplete" Remark="是否可以直接结束流程" />
+    <Column Name="isFixUser" Remark="是否固定审批人员用户侨鑫用户提前选人，有的人员不用" />
+    <Column Name="stepOrder" Remark="步骤顺序" />
+    <Column Name="turnRightName" Remark="转办按钮别名"/>
+    <Column Name="completeStepName" Remark="结束会签按钮别名"/>
+    <Column Name="canImComplete" Remark="能否直接结束"/>
+    <Column Name="ImCompleteName" Remark="直接结束名称"/>
+    <Column Name="isChecker" Remark="是否核稿人"/>
+    <Column Name="canTurnRight" Remark="是否有转办按钮"/>
+    <Column Name="sameUserStepId" Remark="相同人员步骤Id"/>
+    <Column Name="noRefuseBtn" Remark="是否禁用驳回按钮"/>
+    <Column Name="flowInstanceId" Remark="有可能为流程实例中创建的步骤" />
+    <Column Name="addCSStepId" Remark="当前会签步骤Id当前步骤在流程执行过程中创建了该步骤" />
+  </Table>
+
+  <Table Name="BusFlowStepReferField" Remark="对应步骤可编辑字段" >
+    <Column Name="referFieldId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId" Remark="步骤" />
+    <Column Name="referFieldName"  Remark="字段名" />
+    <Column Name="tableName"  Remark="表名" />
+    <Column Name="fieldType"   Remark="编辑类型" />
+    <Column Name="canEdit"   Remark="0不可编辑1可编辑" />
+  </Table>
+  <Table Name="BusFlowStepActionName" Remark="对应步骤动作可编辑字段名" >
+    <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId" Remark="步骤" />
+    <Column Name="actId" SourceTable="BusFlowAction" SourceColumn="actId" Remark="步骤" />
+    <Column Name="name"  Remark="别名" />
+  </Table>
+  <Table Name="BusFlowStepUserRel" Remark="人员步骤表" >
+    <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="postId" SourceTable="OrgPost" SourceColumn="postId" Remark="部门岗位冗余" />
+    <Column Name="flowPosId" SourceTable="BusFlowPosition" SourceColumn="postId" Remark="流程岗位冗余" />
+    <Column Name="userId" SourceTable="SysUser" SourceColumn="userId" Remark="用户表" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="userId" Remark="步骤" />
+  </Table>
+  <Table Name="BusFlowInstance" Remark="流程实例表" >
+    <Column Name="flowInstanceId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId"   Remark="系统流程表" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId"  Remark="步骤" />
+    <Column Name="tableName" Remark="表名" />
+    <Column Name="referFieldName" Remark="字段名" />
+    <Column Name="referFieldValue" Remark="值" />
+    <Column Name="instanceStatus" Remark="实例状态" />
+    <Column Name="instanceName" Remark="实例名" />
+    <Column Name="instanceUrl" Remark="实例跳转地址" />
+    <Column Name="approvalItem" Remark="审批事项" />
+    <Column Name="approvalSubject" Remark="审批事由" />
+    <Column Name="completeDate" Remark="结办时间" />
+    <Column Name="approvedAmount" Remark="审批金额" />
+    <Column Name="approvalUserId"  SourceTable="SysUser" SourceColumn="userId"   Remark="发起人" />
+    <Column Name="instanceGuid" Remark="guid" />
+  </Table>
+  <Table Name="BusFlowInstanceRelation" Remark="流程实例表关联" >
+    <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="curflowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="当前流程实例" />
+    <Column Name="refFlowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="引用流程实例" />
+    <Column Name="type"  Remark="引用类型默认0" />
+  </Table>
+  
+  <Table Name="BusFlowFormData" Remark="表单值" >
+    <Column Name="formId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="流程实例表" />
+    <Column Name="stepId"  Remark="步骤" />
+    <Column Name="actId" SourceTable="BusFlowAction" SourceColumn="actId" Remark="动作Id" />
+    <Column Name="content"  Remark="审批意见" />
+    <Column Name="attitude"  Remark="审批态度0不同意1同意2已阅" />
+  </Table>
+  <Table Name="BusFlowTrace" Remark="流程跟踪日志" >
+    <Column Name="traceId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="actId" SourceTable="BusFlowAction" SourceColumn="actId" Remark="动作Id" />
+    <Column Name="preStepId"   Remark="前步骤" />
+    <Column Name="nextStepId" Remark="后步骤" />
+    <Column Name="flowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="流程实例表" />
+    <Column Name="traceType"   Remark="流程动作类型   -1 --重启流程 0 -- 启动流程1 -- 系统自动执行2 -- 用户执行动作3 -- 回滚4 -- 强制进入下一步骤5-- 废弃流程6 --转办功能7 -- 沟通日志 8传阅功能 9直接完成 10  三盛当前签操作 11 加签 12减签操作 " />
+    <Column Name="formId"  SourceTable="BusFlowFormData" SourceColumn="formId"   Remark="流程表单值" />
+    <Column Name="actionAvaiable"  Remark="动作有效性" />
+  </Table>
+  <Table Name="InstanceActionUser" Remark="动态实例人员" >
+    <Column Name="inActId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="stepId"  Remark="步骤，后面有可能为空" />
+    <Column Name="flowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="流程实例表" />
+    <Column Name="userId"  SourceTable="SysUser" SourceColumn="userId"   Remark="用户" />
+    <Column Name="orginalUserId"  SourceTable="SysUser" SourceColumn="userId"   Remark="用户" />
+    <!--2014.1.14新增属性-->
+    <Column Name="stepOrder"  Remark="步骤类别" />
+    <Column Name="flowPosId" SourceTable="BusFlowPosition" SourceColumn="flowPosId" Remark="流程岗位表" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="postId" SourceTable="OrgPost" SourceColumn="postId" Remark="部门岗位冗余" />
+    <Column Name="actTypeId" SourceTable="BusFlowActionType" SourceColumn="actTypeId" Remark="动作类型" />
+    <Column Name="enslavedStepId" Remark="受至于步骤Id" />
+    <Column Name="resetCSignStepId" Remark="重启二次会签步骤岗位" />
+    <Column Name="converseRefuseStepId" Remark="挽回驳回操作"/>
+    <Column Name="turnRightName" Remark="转办按钮别名"/>
+    <Column Name="completeStepName" Remark="结束会签按钮别名"/>
+    <Column Name="actionAvaiable" Remark="会签是否已执行"/>
+    <Column Name="status"     Remark="0默认 1无效" />
+    <Column Name="isChecker" Remark="是否核稿人"/>
+    <Column Name="isSkip" Remark="是否跳过对应的步骤0：不跳过；1：跳过"/>
+    <Column Name="canTurnRight" Remark="是否有转办按钮"/>
+    <Column Name="sameUserStepId" Remark="相同人员步骤Id"/>
+    <Column Name="draftRemark" Remark="暂存草稿"/>
+    <Column Name="primStepId" Remark="主步骤Id"/>
+   </Table>
+
+  <Table Name="BusFlowInstanceRemark" Remark="常用语" >
+    <Column Name="remarkId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="remark" Remark="是否有转办按钮" />
+    <Column Name="counter" Remark="计数" />
+  </Table>
+  
+  <Table Name="BusinessFlowTurnRight" Remark="流程转办表" >
+    <Column Name="turnId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="grantUserId" SourceTable="SysUser" SourceColumn="userId" Remark="转办人" />
+    <Column Name="givenUserId" SourceTable="SysUser" SourceColumn="userId" Remark="被转办人" />
+    <Column Name="flowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="流程实例表" />
+    <Column Name="orginalUserId"  SourceTable="SysUser" SourceColumn="userId"   Remark="原始权限用户Id" />
+  </Table>
+  <Table Name="BusinessFlowTurnRightTrace" Remark="流程转办日志关联" >
+    <Column Name="relationId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="turnId" SourceTable="BusinessFlowTurnRight" SourceColumn="turnId" Remark="流程转办表" />
+    <Column Name="traceId" SourceTable="BusFlowTrace" SourceColumn="traceId" Remark="流程跟踪日志" />
+  </Table>
+
+  <Table Name="BusinessFlowUserGrant" Remark="流程替换表与转办表不同，单个步骤单个步骤替换" >
+    <Column Name="grantId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="grantUserId" SourceTable="SysUser" SourceColumn="userId" Remark="转办人" />
+    <Column Name="givenUserId" SourceTable="SysUser" SourceColumn="userId" Remark="被转办人" />
+    <Column Name="inActId" SourceTable="InstanceActionUser" SourceColumn="inActId" Remark="动态流程用户表" />
+    <Column Name="stepId"  Remark="步骤Id" />
+    <Column Name="stepOrder"  Remark="步骤顺序" />
+    <Column Name="flowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="流程实例表" />
+    <Column Name="orginalUserId"  SourceTable="SysUser" SourceColumn="userId"   Remark="原始权限用户Id" />
+    <Column Name="turnRightType"  Remark="转办类型 0交办 1提交 2退回"  />
+    <Column Name="submitJumpUserId"  Remark="2015.1.8跳过秘书步骤直接提交给某人"  />
+    <Column Name="grantHasSubmit"  Remark="用于判断交办的记录是否已经提交回来0没有 1代表提交回来"  />
+    
+  </Table>
+
+  <!--袁辉 2014-02-10-->
+  <Table Name="FlowInstanceAmount" Remark="流程实例合同金额相关信息" >
+    <Column Name="amountId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="设计变更对应审批流程" />
+    <Column Name="flowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="对应的流程实例" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId" Remark="对应的步骤Id" />
+    <Column Name="inActId" SourceTable="InstanceActionUser" SourceColumn="inActId" Remark="对应的动态实例人员" />
+    <Column Name="contract"  Remark="对应的施工合同" />
+    <Column Name="changeAmount"  Remark="变更金额" />
+  </Table>
+
+  <!--流程传阅功能2013.4.1-->
+  <Table Name="BusinessFlowCirculation" Remark="流程传阅表" >
+    <Column Name="circulatId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="grantUserId" SourceTable="SysUser" SourceColumn="userId" Remark="转办人" />
+    <Column Name="givenUserId" SourceTable="SysUser" SourceColumn="userId" Remark="被转办人" />
+    <Column Name="flowInstanceId" SourceTable="BusFlowInstance" SourceColumn="flowInstanceId" Remark="流程实例表" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId" Remark="步骤" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+  </Table>
+  <Table Name="BusinessFlowCirculationTrace" Remark="流程传阅日志关联" >
+    <Column Name="relationId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="circulatId" SourceTable="BusinessFlowCirculation" SourceColumn="turnId" Remark="流程转办表" />
+    <Column Name="traceId" SourceTable="BusFlowTrace" SourceColumn="traceId" Remark="流程跟踪日志" />
+  </Table>
+  
+  <Table Name="FlowFileRequest" Remark="审批附件要求" >
+    <Column Name="requestId" IsPrimary="true" IsIdentity="true" Remark="审批文档要求Id主键" />
+    <Column Name="flowId"  SourceTable="BusFlow" SourceColumn="flowId" Remark="流程Id" />
+    <Column Name="content"  Remark="上传要求详细描述" />
+  </Table>
+
+  <Table Name="TransactionStore" Remark="事务库" >
+    <Column Name="transactionId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="isActive"  Remark="0:无效1:有效" />
+    <Column Name="remark"  Remark="备注" />
+    <Column Name="tranClass"  Remark="事务的处理类" />
+    <Column Name="type"   Remark="0:系统内置1:用户自定义" />
+    <Column Name="tranType"   Remark="事务类型0默认 1审批金额判断" />
+    <Column Name="leftFormula"   Remark="左侧公式" />
+    <Column Name="rightFormula"   Remark="右侧公式" />
+    <Column Name="leftNum"   Remark="左侧值" />
+    <Column Name="rightNum"   Remark="右侧值" />
+    <Column Name="mode"   Remark="and 0   or 1左右值合并" />
+    <Column Name="flowPosId"  Remark=" BusFlowPosition postId条件跳转" />
+    <Column Name="changeStatusName"   Remark="需要更改的状态名称" />
+    <Column Name="changeStatusValue"   Remark="需要更改的状态值" />
+    <Column Name="taskStatus"   Remark="任务状态" />
+    <Column Name="instanceStatus"   Remark="实例状态比对，只有流程实例状态与TransactionStore对应才能执行 1代表完成0代表进行中 2014.12.29添加用于防止最有一步驳回也执行完成事务" />
+    <Column Name="approvalOrRefuse"   Remark="用表设置通过或者驳回类型执行对应的事务 空代表可执行通过与驳回 1 代表只有通过才执行 2代表驳回才执行 目前只用于跳出实时步骤事务" />
+  </Table>
+
+  <Table Name="StepTransaction" Remark="步骤事务" >
+    <Column Name="stepTranId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="stepId"   Remark="步骤" />
+    <Column Name="type"   Remark="流程动作类型  0:进入 1:等待 2:跳转" />
+    <Column Name="transactionId" SourceTable="TransactionStore" SourceColumn="transactionId" Remark="事务库" />
+  </Table>
+
+  <Table Name="StepCirculation" Remark="步骤传阅设置" >
+    <Column Name="circulatStepId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId" Remark="步骤" />
+    <Column Name="unAvaiable"   Remark="是否不可用 0 可用  1 不可用" />
+    <Column Name="userId"   Remark="传阅人" />
+  </Table>
+
+  <Table Name="StepCirculationFlowPosition" Remark="步骤岗位选择传阅设置" >
+    <Column Name="circulatStepId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="系统流程表" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId" Remark="步骤" />
+    <Column Name="unAvaiable"   Remark="是否不可用 0 可用  1 不可用" />
+    <Column Name="flowPosId" SourceTable="BusFlowPosition" SourceColumn="flowPosId" Remark="流程岗位表" />
+  </Table>
+  <!--流程档案编号-->
+  <Table Name="BusFlowFileNumber" Remark="流程实例表SJBG-201402-003" >
+    <Column Name="fileNumId" IsPrimary="true" IsIdentity="true" Remark="主键id"  />
+    <Column Name="tableName" Remark="表名" />
+    <Column Name="referFieldName" Remark="字段名" />
+    <Column Name="referFieldValue" Remark="值" />
+    <Column Name="fileNumCode" Remark="档案编号" />
+    <Column Name="code" Remark="对象编号SJBG" />
+    <Column Name="year" Remark="年" />
+    <Column Name="month" Remark="月" />
+    <Column Name="num" Remark="编号位码" />
+    <Column Name="status" Remark="是否可用" />
+  </Table>
+
+  <!--系统消息-->
+  <Table Name="MailOutServer" Remark="邮件外发服务" >
+    <Column Name="mailOutSvrId" IsPrimary="true" IsIdentity="true" Remark="主键Id" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="smtpAddr"  Remark="SMTP地址" />
+    <Column Name="smtpPort"  Remark="SMTP端口" />
+    <Column Name="userName"  Remark="用户名" />
+    <Column Name="userPwd"  Remark="用户密码" />
+    <Column Name="displayName"  Remark="用户别名" />
+  </Table>
+  <Table Name="MailSort" Remark="邮件类型" >
+    <Column Name="mailSortId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name" Remark="类型名称" />
+  </Table>
+  <Table Name="Mail" Remark="邮件" >
+    <Column Name="mailId" IsPrimary="true" IsIdentity="true" Remark="邮件Id" />
+    <Column Name="title"  Remark="标题" />
+    <Column Name="contentHead"  Remark="内容头部" />
+    <Column Name="content"  Remark="内容" />
+    <Column Name="type"  Remark="类型" />
+    <Column Name="isDraft"  Remark="是否草稿(0不是,1是)" />
+    <Column Name="sendStatus"  Remark="发送状态" />
+    <Column Name="isImportant"  Remark="是否重要邮件" />
+    <Column Name="mailSortId" SourceTable="MailSort" SourceColumn="mailSortId" Remark="邮件类型" />
+  </Table>
+  <Table Name="MailRefUser" Remark="邮件人员关联" >
+    <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark="关联Id" />
+    <Column Name="mailId" SourceTable="Mail" SourceColumn="mailId" Remark="邮件Id" />
+    <Column Name="userId" SourceTable="SysUser" SourceColumn="userId" Remark="用户Id" />
+    <Column Name="userType"  Remark="用户类型(0：发件人 1：收件人 2：抄送人" />
+    <Column Name="readStatus"  Remark="阅读状态" />
+    <Column Name="deleteStatus"  Remark="删除状态(0：未删1：已删)" />
+    <Column Name="status"  Remark="状态星标(0：有加星标1：没加星标)" />
+  </Table>
+
+  <!--系统消息-->
+  <Table Name="TablePKCounter" Remark="表主键计数器" >
+    <Column Name="tbName"  Remark="操作表" />
+    <Column Name="count"  Remark="当前最大主键Id" />
+  </Table>
+  <Table Name="FileCount" Remark="文档上传统计" >
+    <Column Name="countId" IsPrimary="true" IsIdentity="true" Remark="统计编号" />
+    <Column Name="userId"  Remark="用户Id" />
+    <Column Name="count"  Remark="数量" />
+    <Column Name="state"  Remark="状态" />
+  </Table>
+
+  <!--系统日志表-->
+  <Table Name="SysMainDataLog" Remark="有标记的数据日志" >
+    <Column Name="logUserId"  Remark="操作人" />
+    <Column Name="ipAddress"  Remark="Ip地址" />
+    <Column Name="logTime"  Remark="操作时间" />
+    <Column Name="timeSort"  Remark="时间顺序" />
+    <Column Name="logType"  Remark="操作类型(0 普通操作,1 登录,2 登出,3 新增,4 编辑,5 删除" />
+    <Column Name="tableName"  Remark="操作表" />
+    <Column Name="oldData"  Remark="旧的数据" />
+    <Column Name="opData"  Remark="操作数据" />
+  </Table>
+  <Table Name="SysAssoDataLog" Remark="无标记的数据日志" >
+    <Column Name="logUserId"  Remark="操作人" />
+    <Column Name="ipAddress"  Remark="Ip地址" />
+    <Column Name="logTime"  Remark="操作时间" />
+    <Column Name="timeSort"  Remark="时间顺序" />
+    <Column Name="logType"  Remark="操作类型(0 普通操作,1 登录,2 登出,3 新增,4 编辑,5 删除" />
+    <Column Name="tableName"  Remark="操作表" />
+    <Column Name="oldData"  Remark="旧的数据" />
+    <Column Name="opData"  Remark="操作数据" />
+  </Table>
+  <Table Name="SysBehaviorLog" Remark="行为日志" >
+    <Column Name="logUserId"  Remark="操作人" />
+    <Column Name="ipAddress"  Remark="Ip地址" />
+    <Column Name="logTime"  Remark="操作时间" />
+    <Column Name="timeSort"  Remark="时间顺序" />
+    <Column Name="logType"  Remark="操作类型(0 普通操作,1 登录,2 登出,3 新增,4 编辑,5 删除" />
+    <Column Name="referrer"  Remark="父级url地址" />
+    <Column Name="path"  Remark="地址" />
+    <Column Name="browser"  Remark="浏览器" />
+    <Column Name="method"  Remark="提交方式" />
+  </Table>
+  <Table Name="SysLogResolve" Remark="日志解析表" >
+    <Column Name="resolveId" IsPrimary="true" IsIdentity="true" Remark="主键Id" />
+    <Column Name="name"  Remark="解析名称" />
+    <Column Name="query"  Remark="解析查询" />
+  </Table>
+
+  <!--评价与问答-->
+  <Table Name="Evaluation_Comment" Remark="标准成果评价表" >
+    <Column Name="commentId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="objectId"  Remark="所属的对象Id" />
+    <Column Name="commentObjectId"  Remark="评论类别" />
+    <Column Name="comTitle"  Remark="标题" />
+    <Column Name="comContent"  Remark="评论内容" />
+    <Column Name="commentNum"  Remark="评论数" />
+    <Column Name="revertNum"  Remark="推荐数" />
+  </Table>
+  <Table Name="Evaluation_CommentReply" Remark="标准成果评价回复" >
+    <Column Name="revertId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="commentId" SourceTable="Evaluation_Comment" SourceColumn="commentId" Remark="对评价的回复" />
+  </Table>
+  <Table Name="QuestionAnswer_Category" Remark="问答系统目录" >
+    <Column Name="catId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="目录名称" />
+    <Column Name="nodePid" Remark="父节点" />
+  </Table>
+  <Table Name="QuestionAnswer_Result" Remark="问答系统提问" >
+    <Column Name="questionId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="名称" />
+    <Column Name="catId" SourceTable="QuestionAnswer_Category" SourceColumn="catId" Remark="所属目录节点" />
+  </Table>
+  <Table Name="Answer_Detail" Remark="回复" >
+    <Column Name="detailId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="questionId" SourceTable="QuestionAnswer_Result" SourceColumn="questionId" Remark="提问Id" />
+    <Column Name="detailType" Remark="是否被提问人采纳 默认为空  被采纳为 1" />
+  </Table>
+  <Table Name="UserScore" Remark="问答系统用户得分表" >
+    <Column Name="userScoreId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="userId"  Remark="用户Id" />
+    <Column Name="score"  Remark="用户得分" />
+  </Table>
+
+  <Table Name="ResultView" Remark="成果查看统计" >
+    <Column Name="viewId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="keyName"  Remark="成果主键名" />
+    <Column Name="keyValue"  Remark="成果主键值" />
+    <Column Name="count"  Remark="浏览次数" />
+    <Column Name="tableName"  Remark="成果所在表" />
+  </Table>
+  <!--决策模块表结构信息开始-->
+  <Table Name="ProductPolicy" Remark="产品决策" >
+    <Column Name="policyId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="type" Remark="类型 0：非产品决策模版，1：产品决策模版" />
+  </Table>
+
+  <Table Name="FormTemplateEntry" Remark="表单模板" >
+    <Column Name="entryId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="名称" />
+    <Column Name="nodePid" Remark="父节点"/>
+  </Table>
+
+
+  <Table Name="FormTemplateEntryValueType" Remark="表单值类型" >
+    <Column Name="typeId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="名称" />
+  </Table>
+
+  <Table Name="FormTemplateEntryValue" Remark="表单值模板" >
+    <Column Name="valueId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="entryId" SourceTable="FormTemplateEntry" SourceColumn="entryId" Remark="关联表单模板的" />
+    <Column Name="typeId" SourceTable="FormTemplateEntryValueType" SourceColumn="typeId" Remark="值类型" />
+    <Column Name="name" Remark="名称" />
+    <Column Name="nodePid" Remark="父节点"/>
+  </Table>
+
+  <Table Name="ProjectNode" Remark="项目节点" >
+    <Column Name="nodeId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="typeId" Remark="值类型:1代表模板，0代表项目中使用的节点" />
+  </Table>
+  <!--决策模块表结构信息结束-->
+
+  <!--任务系统-->
+  <Table Name="SysTask" Remark="系统任务" >
+    <Column Name="systaskId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="state" Remark="任务状态：0代表未开始  1表示已指派 2表示已反馈 3表示已完成" />
+    <Column Name="taskTitle" Remark="任务主题" />
+    <Column Name="taskRemark" Remark="详细要求" />
+    <Column Name="nodePid" Remark="父节点" />
+  </Table>
+  <Table Name="SysTaskAccept" Remark="任务交付物要求" >
+    <Column Name="acceptId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="systaskId" SourceTable="SysTask" SourceColumn="systaskId" Remark="系统任务Id" />
+    <Column Name="name" Remark="要求名称" />
+    <Column Name="remark" Remark="要求备注" />
+  </Table>
+  <Table Name="SysTaskLog" Remark="简单的任务交互日志记录" >
+    <Column Name="logId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="systaskId" SourceTable="SysTask" SourceColumn="systaskId" Remark="系统任务Id" />
+    <Column Name="acceptId" SourceTable="SysTaskAccept" SourceColumn="acceptId" Remark="任务交付物要求Id" />
+    <Column Name="fileId" SourceTable="FileLibrary" SourceColumn="fileId" Remark="文件Id" />
+  </Table>
+
+
+  <!--任务系统-->
+  <Table Name="FeedBackRecord" Remark="用户意见反馈记录" >
+    <Column Name="recordId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="isAnonymous_FeedBackRecord" Remark="是否匿名，让客户敢于提交意见" />
+    <Column Name="modulId_FeedBackRecord" Remark="SysModule模块Id " />
+    <Column Name="modulName_FeedBackRecord" Remark="模块名称" />
+    <Column Name="feedBackType_FeedBackRecord" Remark="反馈类型 0默认 1.操作优化 2.bug问题 3.用户建议 " />
+    <Column Name="pageUrl" Remark="提问页面地址" />
+    <Column Name="title_FeedBackRecord"  Remark="标题" />
+    <Column Name="content_FeedBackRecord"  Remark="评论内容" />
+    <Column Name="commentNum"  Remark="评论数" />
+    <Column Name="revertNum"  Remark="推荐数" />
+    <Column Name="status"  Remark="是否正式发布" />
+  </Table>
+  <Table Name="FeedBackRecordReply" Remark="用户意见反馈记录反馈" >
+    <Column Name="revertId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="recordId" SourceTable="FeedBackRecord" SourceColumn="recordId" Remark="对反馈的回复" />
+  </Table>
+
+  <Table Name="OAToDoNumber" Remark="OA待办编号" >
+    <Column Name="todoNumId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="tableName" Remark="名称" />
+    <Column Name="referFieldName" Remark="类型关键字" />
+    <Column Name="referFieldValue" Remark="关键字值" />
+    <Column Name="stepId" SourceTable="BusFlowStep" SourceColumn="stepId" Remark="产生此待办时流程的步骤id" />
+    <Column Name="actTypeId" SourceTable="BusFlowActionType" SourceColumn="actTypeId" Remark="动作类型id" />
+    <Column Name="stepOrder" Remark="动作顺序" />
+    <Column Name="todoUserId" SourceTable="SysUser" SourceColumn="userId" Remark="待办者id" />
+    <Column Name="todoGuid" Remark="待办guid（新增已办时需要该参数）" />
+    <Column Name="todoTime" Remark="产生此待办的时间" />
+    <Column Name="doneUserId" SourceTable="SysUser" SourceColumn="userId" Remark="实际完成者id" />
+    <Column Name="doneTime" Remark="产生对应已办的时间,没有则为空字符串" />
+    <Column Name="status" Remark="是否已产生对应已办(待办者是否已经处理) 0:否 1:是" />
+  </Table>
+  
+  <!--通用材料-->
+  <Table Name="MatCategory" Remark="材料类目" >
+    <Column Name="categoryId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="名称" />
+    <Column Name="nodePid" Remark="父节点,树形标记" />
+  </Table>
+  <Table Name="MatBaseCat" Remark="材料基类" >
+    <Column Name="baseCatId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="名称" />
+    <Column Name="categoryId" SourceTable="MatCategory" SourceColumn="categoryId" Remark="所属类目" />
+  </Table>
+  <Table Name="Material" Remark="材料实体" >
+    <Column Name="matId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name"  Remark="材料名称" />
+    <Column Name="baseCatId" SourceTable="MatBaseCat" SourceColumn="brandId" Remark="材料所属基类" />
+    <Column Name="brandId" SourceTable="Material_Brand" SourceColumn="brandId" Remark="材料对应品牌" />
+    <Column Name="supplierId" SourceTable="Material_Supplier" SourceColumn="supplierId" Remark="材料对应供应商" />
+  </Table>
+  <!--新的评价表规则开始-->
+  <Table Name="EvaluationComment" Remark="标准成果评价表" >
+    <Column Name="commentId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="tableName"  Remark="所属的对象表名" />
+    <Column Name="keyName"  Remark="所属的对象表名主键" />
+    <Column Name="keyValue"  Remark="所属的对象Id" />
+    <Column Name="objectId"  Remark="评价对象（存放在EvaluationCommentObject表中）" />
+    <Column Name="typeId"  Remark="评价类型(存放在)" />
+    <Column Name="comTitle"  Remark="标题" />
+    <Column Name="comContent"  Remark="评论内容" />
+    <Column Name="commentNum"  Remark="评论数" />
+    <Column Name="revertNum"  Remark="推荐数" />
+  </Table>
+  <Table Name="EvaluationCommentReply" Remark="标准成果评价回复" >
+    <Column Name="revertId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="commentId" SourceTable="Evaluation_Comment" SourceColumn="commentId" Remark="对评价的回复" />
+  </Table>
+  <Table Name="EvaluationCommentObject" Remark="评价对象" >
+    <Column Name="objectId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name"  Remark="评价对象名称" />
+  </Table>
+  <Table Name="EvaluationCommentType" Remark="评价类型" >
+    <Column Name="tyeId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name"  Remark="名称" />
+    <Column Name="isDisplay"  Remark="是否使用（1：使用 2：不使用）" />
+    <Column Name="objectId" SourceTable="EvaluationCommentObject" SourceColumn="objectId" Remark="评价类型所属对象（每种类型可能存在不一样的评价类型）" />
+  </Table>
+  <!--新的评价表规则结束-->
+
+    <Table Name="FlowPosAndOrgRelation" Remark="各城市下分期流程部门与可选人员组织部门关联表" >
+        <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+        <Column Name="flowPosId" Remark="流程部门id" />
+        <Column Name="cityId" Remark="城市id" />
+        <Column Name="orgId" Remark="以英文逗号分隔的部门id，多选" />
+    </Table>
+  <!--新增推送历史记录-->
+  <Table Name="AuditLog" Remark="推送历史记录" >
+    <Column Name="logId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="推送名称" />
+    <Column Name="type" Remark="推送类型" />
+    <Column Name="tableName" Remark="审批表名" />
+    <Column Name="keyValue" Remark="审批主键值" />
+    <Column Name="url" Remark="推送地址" />
+    <Column Name="submitUser" Remark="推送地址" />
+    <Column Name="auditResult" Remark="审批结果  2 ：审批通过  1审批不通过" />
+  </Table>
+  <Table Name="AuditType" Remark="推送类型" >
+    <Column Name="auditType" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="推送名称" />
+    <Column Name="tableName" Remark="审批表名" />
+    <Column Name="type" Remark="推送类型" />
+    <Column Name="url" Remark="推送地址" />
+    <Column Name="submitUser" Remark="推送地址" />
+    <Column Name="auditMode" Remark="审核模式  1：系统默认审核  2：推送审核" />
+  </Table>
+  
+  <Table Name="UserSkanLog" Remark="记录用户浏览记录" >
+    <Column Name="skanLogId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="浏览名称" />
+    <Column Name="tbName" Remark="浏览实体的表名" />
+    <Column Name="keyValue" Remark="浏览实体的键值" />
+    <Column Name="keyName" Remark="浏览实体的键名" />
+    <Column Name="url" Remark="浏览页面地址" />
+    <Column Name="userId" Remark="浏览者Id" />
+    <Column Name="timeMillion" Remark="浏览页面停留时间" />
+    <Column Name="downFileNum" Remark="下载文件个数" />
+    <Column Name="type" Remark=" 1：登陆类型记录 2：浏览页面在线时间记录 3：下载记录" />
+  </Table>
+  <Table Name="SimpleAudit" Remark="简单审批记录" >
+    <Column Name="simpleAduitId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="申请名称" />
+    <Column Name="url" Remark="申请修改链接地址" />
+    <Column Name="libType" Remark="修改类型,1:产品系列成果 2:产品系列房价 3:产品系列客群 4：产品系列土地 5:项目库配置单审核 6：工艺工法 7:苗木库" />
+    <Column Name="tableName" Remark="审批表名" />
+    <Column Name="keyValue" Remark="审批主键值" />
+    <Column Name="keyName" Remark="审批主键名" />
+    <Column Name="field" Remark="修改的字段" />
+    <Column Name="fieldValue" Remark="修改的字段值" />
+    <Column Name="status" Remark="申请审核状态：  1：申请中  2：通过审核  3：驳回审核  4：撤销审核" />
+    <Column Name="nominatorId" Remark="审核人ID" />
+    <Column Name="applyUserId" Remark="申请人ID" />
+    <Column Name="remrk" Remark="申请理由" />
+    <Column Name="auditType" Remark="1：审批申请  2：作废申请" />
+  </Table>
+  <Table Name="SimpleAuditLog" Remark="记录简单审核日志记录" >
+    <Column Name="auditLogId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="审核名称" />
+    <Column Name="tablebName" Remark="审核实体的表名" />
+    <Column Name="keyValue" Remark="审核实体的键值" />
+    <Column Name="keyName" Remark="审核实体的键名" />
+    <Column Name="submitUser" Remark="提交审核人Id" />
+    <Column Name="field" Remark="审核字段" />
+    <Column Name="fieldValue" Remark="审核字段值" />
+    <Column Name="simpleAduitId" Remark="简单审批记录Id"   SourceTable="SimpleAudit" SourceColumn="simpleAduitId" />
+    <Column Name="type" Remark=" 审核类型  1 提交审核 2 审核通过 3 审核驳回 4 申请作废 5 撤销审核 6 作废通过 7 作废驳回 8 撤销作废" />
+  </Table>
+  <!--新增申请修改记录-->
+  <Table Name="ModificationAudit" Remark="修改申请记录" >
+    <Column Name="modificationAuditId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="申请名称" />
+    <Column Name="url" Remark="申请修改链接地址" />
+    <Column Name="type" Remark="修改类型,1:产品系列成果 2:产品系列房价 3:产品系列客群 4：产品系列土地 5:项目库配置单审核 6：工艺工法 7:苗木库" />
+    <Column Name="tableName" Remark="审批表名" />
+    <Column Name="keyValue" Remark="审批主键值" />
+    <Column Name="keyName" Remark="审批主键名" />
+    <Column Name="ModField" Remark="修改的字段" />
+    <Column Name="ModFieldValue" Remark="修改的字段值" />
+    <Column Name="status" Remark="申请审核状态：  1：申请中  2：通过审核  3：驳回审核" />
+    <Column Name="auditUserId" Remark="审核人ID" />
+    <Column Name="applyUserId" Remark="申请人ID" />
+    <Column Name="remrk" Remark="申请理由" />
+  </Table>
+  <Table Name="ModificationAuditLog" Remark="修改申请记录日志" >
+    <Column Name="auditLogId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="name" Remark="审核名称" />
+    <Column Name="tablebName" Remark="审核实体的表名" />
+    <Column Name="keyValue" Remark="审核实体的键值" />
+    <Column Name="keyName" Remark="审核实体的键名" />
+    <Column Name="submitUser" Remark="提交审核人Id" />
+    <Column Name="field" Remark="审核字段" />
+    <Column Name="fieldValue" Remark="审核字段值" />
+    <Column Name="modificationAuditId" Remark="修改审批记录Id"   SourceTable="ModificationAudit" SourceColumn="modificationAuditId" />
+    <Column Name="type" Remark=" 审核类型  1 提交申请修改 2 申请修改通过 3 申请修改驳回 4 撤销申请修改"  />
+  </Table>
+  
+  
+
+  <!--异常记录提醒用于推送错误日志-->
+  <Table Name="CommonExceptionLog" Remark="异常记录提醒" >
+    <Column Name="logId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="errorMessage" Remark="异常信息" />
+    <Column Name="customerCode" Remark="客户代码" />
+    <Column Name="hostDomain" Remark="服务器域名" />
+    <Column Name="requestUrl" Remark="请求url地址" />
+    <Column Name="curUserName" Remark="当前操作用户名" />
+    <Column Name="content" Remark="内容" />
+    <Column Name="date" Remark="错误时间" />
+    <Column Name="remark" Remark="备注" />
+    <Column Name="approvalUserId" Remark="接收人" />
+    <Column Name="logType" Remark="0 异常 1 系统当日使用频度 2用户上传文件失败情况  " />
+    <Column Name="status" Remark="异常记录状态： 0 默认 1：已推送  " />
+    <Column Name="curDayValue" Remark="类型值可能未登陆次数，失败文件个数用来匹对是否发邮件" />
+    <Column Name="totalValue" Remark="总类型用来匹对是否发邮件" />
+  </Table>
+  <Table Name="SystemHealthMessageHandleStore" Remark="系统消息状态处理库" >
+    <Column Name="classId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名字" />
+    <Column Name="isActive"  Remark="0:无效1:有效" />
+    <Column Name="remark"  Remark="备注" />
+    <Column Name="tranClass"  Remark="事务的处理类" />
+    <Column Name="type"   Remark="0:系统内置1:用户自定义" />
+    <Column Name="interval"   Remark="轮询发送间隔时间" />
+    <Column Name="activeTime"   Remark="触发时间" />
+    <Column Name="customerCode"   Remark="客户代码" />
+    
+  </Table>
+  
+   
+  <!--流程和专业的关联-->
+  <Table Name="BusFlowProfessionRelation" Remark="用户意见反馈记录反馈" >
+    <Column Name="relId" IsPrimary="true" IsIdentity="true" Remark="主键" />
+    <Column Name="flowId" SourceTable="BusFlow" SourceColumn="flowId" Remark="对反馈的回复" />
+    <Cilumn Name="flowProfId" SourceTable="FlowProfession" SourceColumn="flowProfId" Remark="对反馈的回复" />
+  </Table>
+
+  <!--选择会签部门时进行切换方便选择-->
+  <Table Name="BusFlowPosGroup" Remark="流程岗位分组表" >
+    <Column Name="groupId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="name"  Remark="名称" />
+  </Table>
+
+  <Table Name="LatestResultPush" Remark="最新成果推送表">
+    <Column Name="pushId" IsPrimary="true" IsIdentity="true" Remark="主键id" />
+    <Column Name="tableName" Remark="成果所在表名" />
+    <Column Name="keyName" Remark="成果的主键名" />
+    <Column Name="keyValue" Remark="成果的主键值" />
+    <Column Name="url" Remark="成果的链接" />
+    <Column Name="type" Remark="1:产品系列成果 2:工艺工法库成果 3:材料库成果 4:苗木库成果 5:客群库 6:土地库" />
+  </Table>
+
+  <Table Name="ResultPushOAUrl" Remark="成果推送链接表">
+    <Column Name="msgId" IsPrimary="true" IsIdentity="true" Remark="主键Id" />
+    <Column Name="message" Remark="推送消息" />
+    <Column Name="url" Remark="推送成果的链接" />
+  </Table>
+</DataRules>
