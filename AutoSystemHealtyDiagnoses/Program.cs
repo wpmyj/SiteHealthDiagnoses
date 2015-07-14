@@ -14,34 +14,35 @@ namespace AutoSystemHealtyDiagnoses
         static void Main(string[] args)
         {
             var helper = new PushInfoHelper();
-            //NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-            //_log.Info("开始运行");
-            //try
-            //{
-            //    helper.startFunction(DataBaseConnectionString, FunctionClassIds);
-            //    _log.Info("无异常");
-            //    //执行父父目录的自动更新程序
-            //    var curDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
-            //    if (curDir != null && curDir.Parent != null)
-            //    {
-            //        var hitWEBSiteUpdate = curDir.Parent.GetFiles().Where(c => c.Name == "WEBSiteUpdate.exe").FirstOrDefault();
-            //        if (hitWEBSiteUpdate != null)
-            //        {
-            //            var thread=new Thread(delegate(){
-            //             ExecProcess(hitWEBSiteUpdate.FullName);
-            //            });
-            //            thread.Start();
-                        
-            //        }
-            //    }
-            //    return;
-            //}
-            //catch (Exception ex)
-            //{
-            //    _log.Info(ex.Message);
-            //}
-            //_log.Info("运行结束");
-            helper.GoogleSTT();
+            NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
+            _log.Info("开始运行");
+            try
+            {
+                helper.startFunction(DataBaseConnectionString, FunctionClassIds);
+                _log.Info("无异常");
+                //执行父父目录的自动更新程序
+                var curDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+                if (curDir != null && curDir.Parent != null)
+                {
+                    var hitWEBSiteUpdate = curDir.Parent.GetFiles().Where(c => c.Name == "WEBSiteUpdate.exe").FirstOrDefault();
+                    if (hitWEBSiteUpdate != null)
+                    {
+                        var thread = new Thread(delegate()
+                        {
+                            ExecProcess(hitWEBSiteUpdate.FullName);
+                        });
+                        thread.Start();
+
+                    }
+                }
+                return;
+            }
+            catch (Exception ex)
+            {
+                _log.Info(ex.Message);
+            }
+            _log.Info("运行结束");
+            //helper.GoogleSTT();
         }
 
 
