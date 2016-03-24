@@ -1,0 +1,1 @@
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Release\AutoSystemHealtyDiagnosesConsole.csprojResolveAssemblyReference.cache

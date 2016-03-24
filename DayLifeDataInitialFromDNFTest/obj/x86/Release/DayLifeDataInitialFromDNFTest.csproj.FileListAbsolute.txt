@@ -1,0 +1,4 @@
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\DayLifeDataInitialFromDNFTest\obj\x86\Release\DayLifeDataInitialFromDNFTest.csprojResolveAssemblyReference.cache
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\DayLifeDataInitialFromDNFTest\obj\x86\Release\DayLifeDataInitialFromDNFTest.Form1.resources
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\DayLifeDataInitialFromDNFTest\obj\x86\Release\DayLifeDataInitialFromDNFTest.Properties.Resources.resources
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\DayLifeDataInitialFromDNFTest\obj\x86\Release\DayLifeDataInitialFromDNFTest.csproj.GenerateResource.Cache
