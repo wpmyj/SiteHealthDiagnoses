@@ -1,0 +1,9 @@
+diff a/AutoSystemHealtyDiagnoses/PushInfoHelper.cs b/AutoSystemHealtyDiagnoses/PushInfoHelper.cs	(rejected hunks)
+@@ -0,6 +0,7 @@
+ using System.Text;
+ using MongoDB.Bson;
+ using System.Threading;
++using MongoDB.Driver.Builders;
+ using System.Configuration;
+ using Yinhe.ProcessingCenter;
+ using Yinhe.ProcessingCenter.SystemHealth;

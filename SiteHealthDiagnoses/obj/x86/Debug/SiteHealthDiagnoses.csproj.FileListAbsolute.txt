@@ -46,3 +46,13 @@ E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\o
 E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.csproj.GenerateResource.Cache
 E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.exe
 E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.pdb
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.csprojResolveAssemblyReference.cache
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.Properties.Resources.resources
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.SystemHealthWatcher.resources
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.csproj.GenerateResource.Cache
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\nlog.dll.nlog
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\SiteHealthDiagnoses.exe.config
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\SiteHealthDiagnoses.exe
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\SiteHealthDiagnoses.pdb
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.exe
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\SiteHealthDiagnoses\obj\x86\Debug\SiteHealthDiagnoses.pdb

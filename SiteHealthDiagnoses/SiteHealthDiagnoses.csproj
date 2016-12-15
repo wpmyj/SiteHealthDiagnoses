@@ -42,7 +42,9 @@
       <HintPath>Library\MongoDriver\MongoDB.Driver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -89,7 +91,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="D:\115Box\A3\Yinhe.ProcessingCenter\Yinhe.ProcessingCenter.csproj">
+    <ProjectReference Include="..\..\..\..\115Box\A3\MengZheng.BusinessControler\MengZheng.BusinessControler.csproj">
+      <Project>{837F8C1B-49F9-44C6-92E2-33049DB8BDED}</Project>
+      <Name>MengZheng.BusinessControler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\115Box\A3\Yinhe.ProcessingCenter\Yinhe.ProcessingCenter.csproj">
       <Project>{09B5BB08-C041-466F-8AAA-0E4C49747B6B}</Project>
       <Name>Yinhe.ProcessingCenter</Name>
     </ProjectReference>

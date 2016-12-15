@@ -1,0 +1,4 @@
+adb shell
+su
+cd /data/data/com.android.providers.settings/databases
+sqlite3 settins.db

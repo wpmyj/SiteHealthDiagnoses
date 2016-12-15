@@ -38,6 +38,10 @@
     <StartupObject>DayLifeDataInitialFromDNFTest.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.4.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MongoDB.Bson">
       <HintPath>..\..\..\..\115Box\A3\packages\MongoDriver\MongoDB.Bson.dll</HintPath>
@@ -48,8 +52,24 @@
     <Reference Include="MySql.Data">
       <HintPath>..\SiteHealthDiagnoses\Library\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="MyXls.SL2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\library\MyXls.SL2.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleCrawler">
+      <HintPath>..\..\..\SimpleCrawler-master\SimpleCrawler-master\src\bin\Debug\SimpleCrawler.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperWebClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\SuperWebClient.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Json">
+      <HintPath>G:\Windows.old.000\Windows\WinSxS\msil_system.runtime.serialization.json_b03f5f7f11d50a3a_4.0.10240.16384_none_f3c6f8dd569dcc85\System.Runtime.Serialization.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,16 +78,29 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Toolslib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\library\Toolslib.dll</HintPath>
+    </Reference>
+    <Reference Include="Yinhoo.Utilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\library\Yinhoo.Utilities.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DBChangeQueue.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="HttpCookieHelper.cs" />
+    <Compile Include="HttpHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServerHelper.cs" />
+    <Compile Include="LeetCodeHelper.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,12 +126,36 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\115Box\A3\MengZheng.BusinessControler\MengZheng.BusinessControler.csproj">
+      <Project>{837F8C1B-49F9-44C6-92E2-33049DB8BDED}</Project>
+      <Name>MengZheng.BusinessControler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\115Box\A3\Yinhe.ProcessingCenter\Yinhe.ProcessingCenter.csproj">
       <Project>{09B5BB08-C041-466F-8AAA-0E4C49747B6B}</Project>
       <Name>Yinhe.ProcessingCenter</Name>
       <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>4</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="MODI">
+      <Guid>{A5EDEDF4-2BBC-45F3-822B-E60C278A1A79}</Guid>
+      <VersionMajor>12</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

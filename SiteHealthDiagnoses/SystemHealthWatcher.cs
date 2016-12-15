@@ -41,12 +41,25 @@ namespace SiteHealthDiagnoses
         {
            
             var constr = this.conStr.Text;
+            var curCustomerCode = string.Empty;
+            if (this.CustomerCodeCmb.SelectedItem!= null)
+            {
+                curCustomerCode = this.CustomerCodeCmb.SelectedItem.ToString();
+            }
+           
             if (!string.IsNullOrEmpty(constr))
             {
                 var dataOp = new DataOperation(new MongoOperation(constr));
                 try
                 {
-                  allFunctionList = dataOp.FindAll("SystemHealthMessageHandleStore").ToList();
+                    if (!string.IsNullOrEmpty(curCustomerCode))
+                    {
+                        allFunctionList = dataOp.FindAll("SystemHealthMessageHandleStore").Where(c => string.IsNullOrEmpty(c.Text("customerCode")) || c.Text("customerCode") == curCustomerCode).ToList();
+                    }
+                    else
+                    {
+                        allFunctionList = dataOp.FindAll("SystemHealthMessageHandleStore").ToList();
+                    }
                 }
 
                 catch (MongoDB.Driver.MongoConnectionException ex)
@@ -113,7 +126,10 @@ namespace SiteHealthDiagnoses
             {
                 this.conStr.Text = DataBaseConnectionString;
             }
-
+            if (!string.IsNullOrEmpty(OuterConnectionStr))
+            {
+                this.outerConnection.Text = OuterConnectionStr;
+            }
             if (!string.IsNullOrEmpty(SysAppConfig.BugPushUrl))
             {
                 this.pushUrlText.Text = SysAppConfig.BugPushUrl;
@@ -191,7 +207,7 @@ namespace SiteHealthDiagnoses
 
             if (hitFunctionList.Count() > 0)
             {
-                MessageInfoFactory.Instance.PushInfo(hitFunctionList, this.conStr.Text);
+                MessageInfoFactory.Instance.PushInfo(hitFunctionList, this.conStr.Text,this.outerConnection.Text);
             }
 
             this.label2.Text = "异步执行任务";
@@ -256,6 +272,26 @@ namespace SiteHealthDiagnoses
                 }
             }
         }
+
+        /// <summary>
+        /// 数据库连接串
+        /// </summary>
+        public static string OuterConnectionStr
+        {
+            get
+            {
+
+                if (ConfigurationSettings.AppSettings["OuterConnectionStr"] != null)
+                {
+                    return ConfigurationSettings.AppSettings["OuterConnectionStr"];
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
  
         /// <summary>
         /// 功能列表
@@ -323,6 +359,7 @@ namespace SiteHealthDiagnoses
                 }
                 UpdateConfig("DataBaseConnectionString", conStr.Text);
                 UpdateConfig("BugPushUrl", this.pushUrlText.Text);
+                UpdateConfig("OuterConnectionStr", this.outerConnection.Text);
                 if (this.CustomerCodeCmb.SelectedIndex > -1)
                 {
                     UpdateConfig("CustomerCode", this.CustomerCodeCmb.SelectedItem.ToString());

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using MongoDB.Bson;
 using System.Threading;
-using MongoDB.Driver.Builders;
 using System.Configuration;
 using Yinhe.ProcessingCenter;
 using Yinhe.ProcessingCenter.SystemHealth;
 using System.Net;
 using System.IO;
 using System.Runtime.Serialization.Json;
+using MongoDB.Driver.Builders;
 namespace AutoSystemHealtyDiagnoses
 {
      
@@ -52,7 +52,7 @@ namespace AutoSystemHealtyDiagnoses
                   }
                       if (hitFunctionList.Count() > 0)
                     {
-                        MessageInfoFactory.Instance.PushInfo(hitFunctionList, constr);
+                        MessageInfoFactory.Instance.PushInfo(hitFunctionList, constr, SysAppConfig.OuterConnectionStr);
                     }
                 }
          
