@@ -32,6 +32,8 @@ using MongoDB.Driver;
 using SimpleCrawler.Demo;
 using org.in2bits.MyXls;
 using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
+
 //using Yinhe.ProcessingCenter.QuestionAnswer;
 
 
@@ -46,7 +48,7 @@ namespace DayLifeDataInitialFromDNFTest
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string connStr = "mongodb://sa:dba@192.168.1.230/WorkPlanManage";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/WorkPlanManage";
             DataOperation operation = new DataOperation(new MongoOperation(connStr));
             string[] source = "job,revert,flavor_text,set_name,fullset_basic_explain,fullset_detail_explain,rarity".Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             string rarity = "4";
@@ -111,7 +113,7 @@ namespace DayLifeDataInitialFromDNFTest
         private void button2_Click(object sender, EventArgs e)
         {
             Func<BsonDocument, bool> predicate = null;
-            string connStr = "mongodb://sa:dba@192.168.1.230/WorkPlanManage";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/WorkPlanManage";
             DataOperation operation = new DataOperation(new MongoOperation(connStr));
             string[] source = new string[] { "set_name", "name2", "name", "basic_explain", "detail_explain", "fullset_basic_explain", "fullset_detail_explain", "flavor_text", "explain", "speech", "emancipate_explain" };
             Dictionary<string, BsonDocument> keyFieldDic = new Dictionary<string, BsonDocument>();
@@ -343,6 +345,9 @@ namespace DayLifeDataInitialFromDNFTest
             var dir = new FileInfo(Application.ExecutablePath);
             this.openFileDialog1.InitialDirectory = dir.DirectoryName;
             LibCurlNet.HttpManager.Instance.InitWebClient(hi, true, 30, 30);
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_PROXY, string.Format("{0}:{1}", proxyHost, proxyPort));
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_USERPWD, string.Format("{0}:{1}", proxyUser, proxyPass));
+            hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_PROXY, GetWebProxyCurl());
         }
 
         public class AnagramEqualityComparer : IEqualityComparer<string>
@@ -373,7 +378,7 @@ namespace DayLifeDataInitialFromDNFTest
             {
                 x = _x; y = _y;
             }
-            
+
         }
         /// <summary>
         /// 多边形
@@ -479,36 +484,142 @@ namespace DayLifeDataInitialFromDNFTest
             }
         }
 
+        private string GetFilterValue(BsonDocument doc,string[] guidColumnList)
+        { 
+            var sb=new StringBuilder();
+            foreach(var guidColumn in guidColumnList)
+            {
+                sb.Append(doc.Text(guidColumn));
+            }
+            return sb.ToString();
+        }
+
+        private BsonDocument InitBsonByMutipleProprery( BsonDocument addBson, string property, string level)
+        {
+            var propertyBsonList = new List<BsonDocument>();
+            var propertyArray = property.Split(new string[] { "，", "," }, StringSplitOptions.RemoveEmptyEntries);
+            var levelArray = level.Split(new string[] { "，", "," }, StringSplitOptions.RemoveEmptyEntries);
+            for (var j = 0; j < propertyArray.Length; j++)
+            {
+                if (j < levelArray.Length)
+                {
+                    propertyBsonList.Add(new BsonDocument(propertyArray[j], levelArray[j]));
+                }
+                else
+                {
+                    propertyBsonList.Add(new BsonDocument(propertyArray[j], ""));
+                }
+            }
+            if (propertyBsonList.Count() > 0)
+            {
+                addBson.Add("properyty", propertyBsonList.ToJson());
+            }
+            return addBson;
+        }
         private void button5_Click(object sender, EventArgs e)
         {
-            var pointList = new MapPolygon();
-            pointList.Add(new MapPoint(116.387112, 39.92097));
-            pointList.Add(new MapPoint(116.385243, 39.913063));
-            pointList.Add(new MapPoint(116.394226, 39.917988));
-            pointList.Add(new MapPoint(116.401772, 39.921364));
-            pointList.Add(new MapPoint(116.41248, 39.927893));
+            //var pointList = new MapPolygon();
+            //pointList.Add(new MapPoint(116.387112, 39.92097));
+            //pointList.Add(new MapPoint(116.385243, 39.913063));
+            //pointList.Add(new MapPoint(116.394226, 39.917988));
+            //pointList.Add(new MapPoint(116.401772, 39.921364));
+            //pointList.Add(new MapPoint(116.41248, 39.927893));
 
-
-
-
-            var connStr = "mongodb://sa:dba@59.61.72.36/MZEnterpriseGeo";
+          //  var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
+            //var connStr = "mongodb://MZsa:(MZdba36)@59.61.72.36:37088/MZCity_CPIM";
+             var connStr = "mongodb://MZsa:MZdba@192.168.1.124:37088/SimpleCrawler";
+           // DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
+           
+            //var connStr = "mongodb://sa:dba@59.61.72.36/MZEnterpriseGeo";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
-            MongoOperation _mongoDBOp = new MongoOperation(connStr);
-            //var hitResult = dataOp.FindAllByQuery("MapInfo", Query.WithinPolygon("loc", pointList.To2DArray())).ToList();
-
-            //var rect = new MapRectangle(new MapPoint(116.387112, 39.92097), new MapPoint(116.394226, 39.917988));
-            //var hitResult = dataOp.FindAllByQuery("MapInfo", Query.WithinRectangle("loc", rect.LowerLeftX,rect.LowerLeftY,rect.UpperRightX,rect.UpperRightY)).ToList();
-            //5公里/   
-            var radius = 5;//5公里 ,球面算（不能超过5000公里），不按球面算
-            //3959.192为地球半径，单位英里。这里将英里转换成千米
-            //var radius = 0.05;
-            var circle = new MapCircle(new MapPoint(118.783799, 31.979234), radius,false);
-            var hitResult = dataOp.FindAllByQuery("EnterpriseGeo", Query.And(Query.WithinCircle("loc", circle.CenterPoint.x, circle.CenterPoint.y, circle.Radius, circle.Spherical), Query.EQ("isDetail", "1"))).ToList();
-            foreach(var result in hitResult)
+            var tableName = "JobCategory";
+            var guidColumn = new string[] { "domain","jobCategory" };
+            var allGuidList = dataOp.FindAll(tableName).SetFields(guidColumn).Select(c => GetFilterValue(c, guidColumn)).ToList();
+            var textStr = this.richTextBox1.Text.Split(new string[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+            var sb = new StringBuilder();
+            var insertCount = 0; var updateCount = 0;
+            var addList = new List<BsonDocument>();
+            //_id	RANK	NAME	LAT	LNG	PINYIN	IS_OPEN	DIVISION_STR
+            //id	name	level	fullname
+            //id	fromid	toid	level
+            var columnList = new string[] { "domain", "jobCategory", "properyty", "level", "properyty", "level"};
+           // var columnList = new string[] { "domain", "jobCategory", "properyty", "level","type" };
+            var columnLength = columnList.Length;
+           
+            foreach (var record in textStr)
             {
-            
+               
+                var cityStrArr = record.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries);
+                var addBson = new BsonDocument();
+                addBson.Add("guid", Guid.NewGuid().ToString());
+                var propertyBsonList = new List<BsonDocument>();
+                var canAdd = true;
+                for (var i = 0; i < columnLength && i < cityStrArr.Length; i++)
+                {
+                    if (columnList[i] != "properyty" && columnList[i] != "level")
+                    {
+                        if (columnList[i] == "type" && !cityStrArr[i].EndsWith("类"))
+                        {
+                            cityStrArr[i] = cityStrArr[i] + "类";
+                        }
+                        addBson.Add(columnList[i], cityStrArr[i]);
+                    }
+                    
+               }
+                if (cityStrArr.Length > 3)
+                {
+                    propertyBsonList.Add(new BsonDocument().Add(columnList[2], cityStrArr[2]).Add(columnList[3], cityStrArr[3]));
+                }
+                if (cityStrArr.Length > 5)
+                {
+                    propertyBsonList.Add(new BsonDocument().Add(columnList[4], cityStrArr[4]).Add(columnList[5], cityStrArr[5]));
+                }
+
+                if (cityStrArr.Length > 7)
+                {
+                    propertyBsonList.Add(new BsonDocument().Add(columnList[6], cityStrArr[6]).Add(columnList[7], cityStrArr[7]));
+                }
+
+                if (propertyBsonList.Count() > 0)
+                {
+                    addBson.Add("properyty", propertyBsonList.ToJson());
+                }
+                //var property = cityStrArr[2];
+                //var level = cityStrArr[3];
+                //addBson=InitBsonByMutipleProprery(addBson, property, level);
+
+                if (!allGuidList.Contains(GetFilterValue(addBson, guidColumn)))
+                {
+                    addList.Add(addBson);
+                }
+                else
+                { 
+                
+                }
             }
-            
+            if (addList.Count() > 0)
+            {
+                var result = dataOp.BatchInsert(tableName, addList);
+            }
+
+           // BsonValue tempVal = _mongoDBOp.EvalNativeQuery("db.ProductModuleRelation.count()");
+           // BsonValue tempVal = _mongoDBOp.EvalNativeQuery("db.QCCEnterpriseKeyForInit.distinct('_id',{'guid':'e371301616f1692b068ad86f10adb1c6'})");
+            return;
+            ////var hitResult = dataOp.FindAllByQuery("MapInfo", Query.WithinPolygon("loc", pointList.To2DArray())).ToList();
+
+            ////var rect = new MapRectangle(new MapPoint(116.387112, 39.92097), new MapPoint(116.394226, 39.917988));
+            ////var hitResult = dataOp.FindAllByQuery("MapInfo", Query.WithinRectangle("loc", rect.LowerLeftX,rect.LowerLeftY,rect.UpperRightX,rect.UpperRightY)).ToList();
+            ////5公里/   
+            //var radius = 5;//5公里 ,球面算（不能超过5000公里），不按球面算
+            ////3959.192为地球半径，单位英里。这里将英里转换成千米
+            ////var radius = 0.05;
+            //var circle = new MapCircle(new MapPoint(118.783799, 31.979234), radius,false);
+            //var hitResult = dataOp.FindAllByQuery("EnterpriseGeo", Query.And(Query.WithinCircle("loc", circle.CenterPoint.x, circle.CenterPoint.y, circle.Radius, circle.Spherical), Query.EQ("isDetail", "1"))).ToList();
+            //foreach(var result in hitResult)
+            //{
+
+            //}
+
 
             //var allAccountList = dataOp.FindAllByQuery("QiXinEnterpriseKey",Query.And( Query.Exists("province", false), Query.Exists("provinceName", true))).SetFields("guid", "province", "name", "provinceName");
             //var cityName = "青岛";
@@ -561,25 +672,25 @@ namespace DayLifeDataInitialFromDNFTest
             //}
 
             //启信关键字添加
-            //var allAccountNameList = dataOp.FindAll("QCCEnterpriseKeyScopeKeyWord").Select(c => c.Text("keyWord")).ToList();
+            //var allAccountNameList = dataOp.FindAll("QCCEnterpriseKeyWord").Select(c => c.Text("keyWord")).ToList();
             //var keyWordStr = this.richTextBox1.Text;
-            //var textStrArr = keyWordStr.Split(new string[] { "\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
+            //var textStrArr = keyWordStr.Split(new string[] { "\n", "\t", "\r" }, StringSplitOptions.RemoveEmptyEntries);
             //foreach (var text in textStrArr)
             //{
 
 
-            //        var keyWord = text.Trim();
+            //    var keyWord = text.Trim();
 
-            //        if (allAccountNameList.Contains(keyWord)) continue;
-            //        allAccountNameList.Add(keyWord);
-            //        var addBson = new BsonDocument().Add("keyWord", keyWord);
-            //        DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "QCCEnterpriseKeyScopeKeyWord", Document = addBson, Type = StorageType.Insert });
+            //    if (allAccountNameList.Contains(keyWord)) continue;
+            //    allAccountNameList.Add(keyWord);
+            //    var addBson = new BsonDocument().Add("keyWord", keyWord);
+            //    DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "QCCEnterpriseKeyWord", Document = addBson, Type = StorageType.Insert });
 
             //}
 
-            //DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "QiXinEnterpriseKey", Document = new BsonDocument().Add("key", "2"), Query = Query.And(Query.Exists("detailInfo", false), Query.EQ("cityName", "成都"), Query.EQ("key", "1")), Type = StorageType.Update });
-            StartDBChangeProcessQuick(_mongoDBOp);
-            MessageBox.Show("succeed");
+            ////DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "QiXinEnterpriseKey", Document = new BsonDocument().Add("key", "2"), Query = Query.And(Query.Exists("detailInfo", false), Query.EQ("cityName", "成都"), Query.EQ("key", "1")), Type = StorageType.Update });
+            //StartDBChangeProcessQuick(_mongoDBOp);
+            //MessageBox.Show("succeed");
         }
 
         /// <summary>
@@ -742,7 +853,7 @@ namespace DayLifeDataInitialFromDNFTest
         /// </summary>
         private void DistinctData()
         {
-            string connStr = "mongodb://sa:dba@192.168.1.230/SimpleCrawler";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation operation = new DataOperation(new MongoOperation(connStr));
             List<StorageData> list = new List<StorageData>();
             var curAllIpList2 = operation.FindAll("IPProxy").SetFields("key", "ip", "status").ToList();
@@ -769,7 +880,7 @@ namespace DayLifeDataInitialFromDNFTest
         }
         private void button7_Click(object sender, EventArgs e)
         {
-            string connStr = "mongodb://sa:dba@192.168.1.230/SimpleCrawler";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation operation = new DataOperation(new MongoOperation(connStr));
             List<StorageData> list = new List<StorageData>();
             var curAllIpList = operation.FindAll("IPProxy").SetFields("key", "ip", "status").Select(c => c.Text("ip")).ToList();
@@ -860,7 +971,7 @@ namespace DayLifeDataInitialFromDNFTest
         private void button8_Click(object sender, EventArgs e)
         {
             AddIPEvent += IPResultReviceEvent;
-            string connStr = "mongodb://sa:dba@192.168.1.230/SimpleCrawler";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation operation = new DataOperation(new MongoOperation(connStr));
 
             var ipProxyList = operation.FindAllByQuery("IPProxy", Query.NE("status", "1")).ToList();
@@ -976,7 +1087,7 @@ namespace DayLifeDataInitialFromDNFTest
         public bool SaveIpStatus()
         {
             var result = new InvokeResult();
-            string connStr = "mongodb://sa:dba@192.168.1.230/SimpleCrawler";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation operation = new DataOperation(new MongoOperation(connStr));
             List<StorageData> updateList = new List<StorageData>();
             while (Queue.Count() > 0 && updateList.Count() <= 20)
@@ -1105,8 +1216,8 @@ namespace DayLifeDataInitialFromDNFTest
             }
         }
 
-        string connStr = "mongodb://sa:dba@192.168.1.230/WorkPlanManage";
-        DataOperation dataop = new DataOperation(new MongoOperation("mongodb://sa:dba@192.168.1.230/WorkPlanManage"));
+        string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/WorkPlanManage";
+        DataOperation dataop = new DataOperation(new MongoOperation("mongodb://MZsa:MZdba@192.168.1.230:37088/WorkPlanManage"));
         private void button10_Click(object sender, EventArgs e)
         {
 
@@ -1224,7 +1335,7 @@ namespace DayLifeDataInitialFromDNFTest
         {
             if (_mongoDBOp == null)
             {
-                var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+                var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
 
                 _mongoDBOp = new MongoOperation(connStr);
             }
@@ -1258,7 +1369,11 @@ namespace DayLifeDataInitialFromDNFTest
                             break;
                     }
                     //logInfo1.Info("");
-                    if (result.Status == Status.Failed) throw new Exception(result.Message);
+                    if (result.Status == Status.Failed)
+                    {
+                        
+                        //throw new Exception(result.Message);
+                    }
 
                 }
 
@@ -1415,12 +1530,15 @@ namespace DayLifeDataInitialFromDNFTest
             {
                 filter = "cityName='{0}' and position like '{1}%'";
             }
+            //修复冒号值：所有的冒号为|H|
+            var lastIndex = strInfo.LastIndexOf(":");
+            
             // /厦门 集美11-07片区厦门（新）站片区圣果路与圣岩路交叉口东南侧:118.071035,24.647118
-            var strInfoArray = strInfo.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-            if (strInfoArray.Length >= 2)
+           // var strInfoArray = strInfo.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+            if (lastIndex != -1)
             {
 
-                var positionStr = strInfoArray[0];
+                var positionStr = strInfo.Substring(0, lastIndex) ;
                 var regex = cityname + "市 ";
                 var index = positionStr.IndexOf(regex);
                 if (index != -1)
@@ -1435,7 +1553,7 @@ namespace DayLifeDataInitialFromDNFTest
                         positionStr = positionStr.Substring(index + regex.Length, positionStr.Length - regex.Length);
                 }
                 //118.071035,24.647118
-                var XYString = strInfoArray[1];
+                var XYString = strInfo.Substring(lastIndex + 1, strInfo.Length - lastIndex - 1);
                 var xyArray = XYString.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                 if (xyArray.Length < 2) return string.Empty;
                 var baiduX = xyArray[0];//百度经度
@@ -1531,7 +1649,11 @@ namespace DayLifeDataInitialFromDNFTest
             this.richTextBox2.Text = sb.ToString();
 
         }
-
+        /// <summary>
+        /// unicode转中文
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public string stringCodeFix(string s)
         {
 
@@ -1567,6 +1689,7 @@ namespace DayLifeDataInitialFromDNFTest
 
         private void button15_Click(object sender, EventArgs e)
         {
+            
             List<string> QueueList = new List<string>();
 
             UrlQueue.Instance.EnQueue(new UrlInfo("http://www.baidu.com"));
@@ -1615,26 +1738,35 @@ namespace DayLifeDataInitialFromDNFTest
             return QueueList;
         }
 
-        private void button16_Click(object sender, EventArgs e)
+        private string FilterStr(string str)
         {
             var curSB = new StringBuilder();
             var hasEdit = new List<string>();
-            var strInfoList = this.richTextBox1.Text.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var strInfoList = str.Split(new string[] { "\n", "、", "," }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var strInfo in strInfoList)
             {
-                if (!hasEdit.Contains(strInfo.Trim()))
+                var filterContent = Toolslib.Str.Sub(strInfo, "(", ")");
+                var netStrInfo = strInfo.Replace("(" + filterContent + ")", "");
+                if (!hasEdit.Contains(netStrInfo.Trim()))
                 {
-                    curSB.AppendFormat(strInfo + "\n");
-                    hasEdit.Add(strInfo.Trim());
+                    curSB.AppendFormat(netStrInfo + ",");
+                    hasEdit.Add(netStrInfo.Trim());
                 }
 
             }
-            this.richTextBox2.Text = curSB.ToString();
+            return curSB.ToString();
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+
+
+            this.richTextBox2.Text = FilterStr(this.richTextBox1.Text);
         }
 
         private void button17_Click(object sender, EventArgs e)
         {
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             var cityNameStr = "上海,北京,成都,福州,广州,杭州,黄山,济南,龙岩,南昌,南京,宁波,泉州,深圳,苏州,武汉,西安,厦门,大连,长沙,合肥,镇江,宁波,中山,郑州,昆明,江苏,重庆";
             var cityNameList = cityNameStr.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -1744,19 +1876,19 @@ namespace DayLifeDataInitialFromDNFTest
         private void button19_Click(object sender, EventArgs e)
         {
             // return ;
-            string connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataop = new DataOperation(new MongoOperation(connStr));
             var cityUrlList = dataop.FindAll("LandFangCityEXURL").ToList();//城市url
             var cityName = "黄山";
             var cityCode = "341000";
             var fieldName = "cityCode";
             var noRegion = false;//是否没有县市
-            var defaultRegionName="";
+            var defaultRegionName = "";
             var cityList = cityUrlList.Where(c => c.Text("type") != "2" && c.Text(fieldName) == cityCode).ToList();
             //var query = Query.Or(Query.EQ("县市", ""), Query.Exists("县市", false), Query.EQ("县市", cityName));
             var query = Query.Or(Query.EQ("县市", "推出时间:"));
             //目前有25万个
-            var landUrlList = dataop.FindAllByQuery("LandFang", Query.And(Query.EQ("所在地", cityName),query )).SetFields("name", "url", "位置", "交易状况", "县市", "区域", "地区", "所在地", "地块评估&gt;&gt; 地块编号", "地块编号").OrderBy(c => c.Text("地区")).ToList();//土地url
+            var landUrlList = dataop.FindAllByQuery("LandFang", Query.And(Query.EQ("所在地", cityName), query)).SetFields("name", "url", "位置", "交易状况", "县市", "区域", "地区", "所在地", "地块评估&gt;&gt; 地块编号", "地块编号").OrderBy(c => c.Text("地区")).ToList();//土地url
 
             foreach (var cityObj in cityList)
             {
@@ -1796,7 +1928,7 @@ namespace DayLifeDataInitialFromDNFTest
                         }
                         if (regionName == null && noRegion)
                         {
-                            regionName = new BsonDocument().Add("name",defaultRegionName);
+                            regionName = new BsonDocument().Add("name", defaultRegionName);
                         }
                         var updateBson = new BsonDocument();
                         if (regionName == null)
@@ -1986,7 +2118,7 @@ namespace DayLifeDataInitialFromDNFTest
 
         private void button21_Click(object sender, EventArgs e)
         {
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             var keyNameStr = new string[] { "和", "与" };//个人"和", "与"
             var keyNameList = keyNameStr.ToList();
@@ -2206,8 +2338,7 @@ namespace DayLifeDataInitialFromDNFTest
                         {
                             this.timer1.Stop();
                             this.timer1.Enabled = false;
-                            this.timer2.Enabled = true;
-                            this.timer2.Start();
+                          
                             JumpBrowerUrl(link);
                             JumpBrowerUrl(timeSelectLink);
                             SendMailMessage();
@@ -2291,7 +2422,7 @@ namespace DayLifeDataInitialFromDNFTest
         /// </summary>
         public void SendMailMessage()
         {
-            string connStr = "mongodb://sa:dba@59.61.72.34/WorkPlanManage";
+            string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/WorkPlanManage";
             DataOperation operation = new DataOperation(new MongoOperation(connStr));
             MessagePushQueueHelper msgHelper = new MessagePushQueueHelper(operation);
             msgHelper.PushMessage(new MessagePushEntity()
@@ -2323,17 +2454,12 @@ namespace DayLifeDataInitialFromDNFTest
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            if (this.timer1.Enabled == false)
-            {
-                this.timer1.Enabled = true;
-                this.timer1.Start();
-                this.timer2.Stop();
-            }
+            ChangeIp();
         }
 
         private void button23_Click(object sender, EventArgs e)
         {
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             MongoOperation _mongoDBOp = new MongoOperation(connStr);
             var connStr2 = "mongodb://sa:dba@192.168.1.114/CompanyHY";
@@ -2356,7 +2482,7 @@ namespace DayLifeDataInitialFromDNFTest
 
         private void button24_Click(object sender, EventArgs e)
         {
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             MongoOperation _mongoDBOp = new MongoOperation(connStr);
             var connStr2 = "mongodb://sa:dba@192.168.1.43/SimpleCrawler";
@@ -2383,7 +2509,7 @@ namespace DayLifeDataInitialFromDNFTest
 
         private void button25_Click(object sender, EventArgs e)
         {
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             MongoOperation _mongoDBOp = new MongoOperation(connStr);
             var allAccountNameList = dataOp.FindAll("QCCEnterpriseKey").SetFields("url").Select(c => c.Text("url")).ToList();
@@ -2597,7 +2723,7 @@ namespace DayLifeDataInitialFromDNFTest
 
         private void button28_Click(object sender, EventArgs e)
         {
-            var connStr = "mongodb://sa:dba@192.168.1.230/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             MongoConnectionStringBuilder builder = new MongoConnectionStringBuilder();
             builder.Server = new MongoServerAddress("192.168.1.230", 27017);
             builder.DatabaseName = "SimpleCrawler";
@@ -2724,9 +2850,7 @@ namespace DayLifeDataInitialFromDNFTest
             {
                 return string.Format("appId:{0}\r deviceId={1}\r timestamp={2}\r sign={3} \r refreshToken={4} \r accessToken={5}\r  isBusy:{6} ", appId, deviceId, timestamp, sign, refreshToken, accessToken, isBusy);
             }
-
-
-
+ 
         }
         public DeviceInfo curDeviceInfo = new DeviceInfo();
         /// <summary>
@@ -2742,45 +2866,50 @@ namespace DayLifeDataInitialFromDNFTest
         }
         public void DeleteDeviceToken()
         {
-            DBChangeQueue.Instance.EnQueue(new StorageData() { Document = new BsonDocument().Add("isInvalid", "1"), Query = Query.EQ("deviceId", curDeviceInfo.deviceId), Name = "QCCDeviceAccount", Type = StorageType.Update });
+            DBChangeQueue.Instance.EnQueue(new StorageData() { Document = new BsonDocument().Add("isDelete", "1").Add("isInvalid", "1"), Query = Query.EQ("deviceId", curDeviceInfo.deviceId), Name = "QCCDeviceAccount", Type = StorageType.Update });
             StartDBChangeProcessQuick(null);
-            ShowMessageInfo("删除设备");
+            ShowMessageInfo("删除设备" + curDeviceInfo.deviceId);
+        }
+        public void ResetDeviceToken()
+        {
+            DBChangeQueue.Instance.EnQueue(new StorageData() { Document = new BsonDocument().Add("isInvalid", "0").Add("status", "0"), Query = Query.EQ("deviceId", curDeviceInfo.deviceId), Name = "QCCDeviceAccount", Type = StorageType.Update });
+            StartDBChangeProcessQuick(null);
+            ShowMessageInfo("激活设备" + curDeviceInfo.deviceId);
+            this.richTextBox2.Text = succedDeviceCount.ToString();
         }
         public void InitDeviceInfo()
         {
             curDeviceInfo.appId = "80c9ef0fb86369cd25f90af27ef53a9e";
-            curDeviceInfo.refreshToken = "b30c9f1ab0a094668001463e63a2a561";
-            curDeviceInfo.accessToken = "Bearer OGM2M2YzZmYtZDg3Zi00OGIzLWE1ODMtMWRmNWNiZDY1NGNl";
-            curDeviceInfo.deviceId = "rtxepUOxiEaxlIqsBJJ7vRiq";
-            curDeviceInfo.timestamp = "1477038756509";
-            curDeviceInfo.sign = "e647d5856a52e8ee6ce5d5f7adbd646575a5984c";
+            curDeviceInfo.deviceId = "HpvJHcaowNntsIOdyny9Wvwa";
+            curDeviceInfo.timestamp = "1477624192811";
+            //curDeviceInfo.sign = "2aa72f91ed83323e169e058488bcf315d04e0750";
+            curDeviceInfo.sign = "9e257d5dd90253786926a423e0c76d753e5bac08";
+            
+            curDeviceInfo.refreshToken = "bf8142235fff0a47b2713b9402e8dffd";
+            curDeviceInfo.accessToken = "Bearer MzJjYzY0MGQtYTEwZC00MzM1LWFhMmQtNTdhOGM0MjA1NmQ4";
         }
         private void button31_Click(object sender, EventArgs e)
         {
 
-            // var result = TestAPPLogin();
-            // if (result.Html.Contains("失效"))
-            // {
-            //     RefreshToken();//刷新token
-
-            //     if (result.Html.Contains("成功"))
-            //     {
-            //         var token = Toolslib.Str.Sub(result.Html, "access_token\":\"", "\"");
-            //         if (!string.IsNullOrEmpty(token))
-            //             curDeviceInfo.accessToken = string.Format("Bearer {0}", token);
-            //         result = TestAPPLogin();//重新登陆
-            //         this.richTextBox1.Text = result.Html;
-
-            //     }
-            // }
-            //if (result.Html.Contains("access_token"))
+            //var result = TestAPPLogin("13174076541");
+            //if (result.Html.Contains("失效"))
             //{
+            //    RefreshToken();//刷新token
             //    var token = Toolslib.Str.Sub(result.Html, "access_token\":\"", "\"");
             //    if (!string.IsNullOrEmpty(token))
-            //        curDeviceInfo.accessToken = string.Format("Bearer {0}", token);
+            //    curDeviceInfo.accessToken = string.Format("Bearer {0}", token);
+            //    result = TestAPPLogin();//重新登陆
+            //    this.richTextBox1.Text = result.Html;
+ 
             //}
-            // var url = new UrlInfo("https://app.qichacha.net/app/v1/base/advancedSearch?searchKey=%E5%8E%A6%E9%97%A8%20%E8%AE%A1%E7%AE%97%E6%9C%BA&searchIndex=default&province=FJ&cityCode=2&statusCode=10&startDateYear=1995&isSortAsc=false&industryCode=I&subIndustryCode=64&timestamp=1473158622274&sign=7552bb78a2d96111234c93b0e34bd3ab55511646&p=2");
-            var province = "GD";
+           
+           //var url = new UrlInfo("https://app.qichacha.net/app/v1/base/advancedSearch?searchKey=%E5%8E%A6%E9%97%A8%20%E8%AE%A1%E7%AE%97%E6%9C%BA&searchIndex=default&province=FJ&cityCode=2&statusCode=10&startDateYear=1995&isSortAsc=false&industryCode=I&subIndustryCode=64&timestamp=1473158622274&sign=7552bb78a2d96111234c93b0e34bd3ab55511646&p=2");
+           TestQCCAppAccess();
+        }
+        public static int succedDeviceCount = 0;
+        public void TestQCCAppAccess()
+        {
+           var province = "GD";
             var cityCode = "1";
             var statusCode = "enterpriseIp";
             var registCapiBegin = "500";
@@ -2793,9 +2922,10 @@ namespace DayLifeDataInitialFromDNFTest
             //var url = new UrlInfo(string.Format("https://app.qichacha.net/app/v1/base/advancedSearch?searchKey={}&searchIndex=default&province=GD&cityCode=1&statuscode=&registCapiBegin=0&registCapiEnd=500&isSortAsc=false&industryCode=A&subIndustryCode=&timestamp={0}&sign={1}", curDeviceInfo.timestamp, curDeviceInfo.sign));
             searchKey = string.Format("\"scope\":\"{0}\"", "计算机");
             searchKey = "{" + HttpUtility.UrlEncode(searchKey) + "}";
-            var uStr = string.Format("https://app.qichacha.net/app/v1/base/advancedSearch?searchKey={0}&searchIndex=multicondition&pageIndex=1&isSortAsc=false&industryCode=L&subIndustryCode=&timestamp={1}&sign={2}", searchKey, curDeviceInfo.timestamp, curDeviceInfo.sign);
+            var uStr = string.Format("https://app.qichacha.net/app/v1/base/advancedSearch?searchKey={0}&searchIndex=multicondition&pageIndex=2&isSortAsc=true&industryCode=L&subIndustryCode=&timestamp={1}&sign={2}&sortField=startdate", searchKey, curDeviceInfo.timestamp, curDeviceInfo.sign);
             //企业详细
-            // var uStr = string.Format("https://app.qichacha.net/app/v1/base/getEntDetail?unique=fa3d9de6fd3ccf354b5ae34c38eb7587&timestamp={1}&sign={2}", searchKey, curDeviceInfo.timestamp, curDeviceInfo.sign);
+           // var uStr = string.Format("https://app.qichacha.net/app/v1/base/getEntDetail?unique=4eb0bc68214c016bc32e192b8c5dca62&timestamp={1}&sign={2}", searchKey, curDeviceInfo.timestamp, curDeviceInfo.sign);
+            //var uStr = string.Format("https://app.qichacha.net/app/v1/msg/getPossibleGenerateRelation?unique=fa3d9de6fd3ccf354b5ae34c38eb7587&sign={0}&token={1}&timestamp={2}&from=h5", curDeviceInfo.sign, curDeviceInfo.accessToken.Replace("Bearer","").Trim(), curDeviceInfo.timestamp);
             // 投资关系
             //var uStr = string.Format("https://app.qichacha.net/app/v1/zscq/getTrademarkList?searchKey=%E6%AD%A6%E6%B1%89%E6%A2%A6%E4%BC%8A%E4%BB%95%E5%AF%9D%E9%A5%B0%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8&pageIndex=1&sortField=&isSortAsc=false&timestamp=1477042955819&sign=21de9c139cc32c1687d4393795e309006061c376", searchKey, curDeviceInfo.timestamp, curDeviceInfo.sign, curDeviceInfo.accessToken.Replace("Bearer", "").Trim());
 
@@ -2824,13 +2954,22 @@ namespace DayLifeDataInitialFromDNFTest
                     content = GetHttpHtml(url).Html;
                 }
             }
-
+            ShowMessageInfo(string.Format("剩余队列个数:{0}", UrlQueue.Instance.Count));
             if (!content.Contains("成功") && content.Contains("异常"))
             {
                 DeleteDeviceToken();
+               // ShowMessageInfo("fail" + curDeviceInfo.deviceId, true);
             }
-            this.richTextBox2.Text = content;
+            else
+            {
+                succedDeviceCount++;
+                ResetDeviceToken();
+              //  ShowMessageInfo("succeed" + curDeviceInfo.deviceId, true);
+            }
+          
+            
         }
+
         #region 题库载入
         //private void button23_Click(object sender, EventArgs e)
         //{
@@ -2932,7 +3071,7 @@ namespace DayLifeDataInitialFromDNFTest
         //    reader.Close();
 
         //    //添加到数据库
-        //    string connStr = "mongodb://sa:dba@59.61.72.34/WorkPlanManage";
+        //    string connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/WorkPlanManage";
         //    DataOperation operation = new DataOperation(new MongoOperation(connStr));
 
         //    var hitLib = operation.FindOneByKeyVal("WPM_QuestionLibrary", "name", libararyName);
@@ -3219,6 +3358,10 @@ namespace DayLifeDataInitialFromDNFTest
         string proxyUser = "H1538UM3D6R2133P";//"H1880S335RB41F8P";////HVW8J9B1F7K4W83P
         string proxyPass = "511AF06ABED1E7AE";//"ECB2CD5B9D783F4E";////C835A336CD070F9D
         SimpleCrawler.HttpHelper http = new SimpleCrawler.HttpHelper();
+        public string GetWebProxyCurl()
+        {
+         return string.Format("http://{0}:{1}@{2}:{3}", proxyUser, proxyPass, proxyHost.Replace("http://",""), proxyPort);
+        }
         public WebProxy GetWebProxy()
         {
             // 设置代理服务器
@@ -3267,8 +3410,6 @@ namespace DayLifeDataInitialFromDNFTest
                 //Cookie = "",//字符串Cookie     可选项
                 UserAgent = "okhttp/3.2.0",//用户的浏览器类型，版本，操作系统     可选项有默认值
                 Referer = "app.qichacha.net",//来源URL     可选项
-
-
                 Postdata = string.Format("loginType=2&accountType=1&account={3}&password=b412a4532991798fcddf698e31125c03&identifyCode=&key=&token=&timestamp={1}&sign={2}", deviceToken, curDeviceInfo.timestamp, curDeviceInfo.sign, accountName),
 
                 //  Postdata = "loginType=2&accountType=1&account=15916800070&password=b412a4532991798fcddf698e31125c03&identifyCode=&key=&token=timestamp=1473249028088&sign=55cb4ab13f780ec74a23344709e94dc163d8f771"
@@ -3334,7 +3475,7 @@ namespace DayLifeDataInitialFromDNFTest
                 Accept = "*/*",
                 // Encoding = null,//编码格式（utf-8,gb2312,gbk）     可选项 默认类会自动识别
                 //Encoding = Encoding.Default,
-                Method = "post",//URL     可选项 默认为Get
+                Method = "Post",//URL     可选项 默认为Get
                 //Timeout = 100000,//连接超时时间     可选项默认为100000
                 //ReadWriteTimeout = 30000,//写入Post数据超时时间     可选项默认为30000
                 //IsToLower = false,//得到的HTML代码是否转成小写     可选项默认转小写
@@ -3354,7 +3495,9 @@ namespace DayLifeDataInitialFromDNFTest
             item.Header.Add("charset", "UTF-8");
             //item.Header.Add("X-Requested-With", "XMLHttpRequest");
             //请求的返回值对象
-            var result = GetPostDataFix(item, accessToken);
+            item.WebProxy = GetWebProxy();
+           // var result = http.GetHtml(item);
+             var result = GetPostDataFix(item, accessToken);
             return result;
         }
 
@@ -3566,13 +3709,15 @@ namespace DayLifeDataInitialFromDNFTest
         {
             comboBox1.Items.Clear();
             //GetAccessToken();
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             MongoOperation _mongoDBOp = new MongoOperation(connStr);
             var tableName = "QCCDeviceAccount";//设备账号注册
             //appId=80c9ef0fb86369cd25f90af27ef53a9e&deviceId=UygxNMGUAhsBAFbml5Qf92Ie&version=9.2.0&deviceType=android&os=&timestamp=1474629307274&sign=257c174551b3bf1660daa3797f71ce3014bf0827
             allAccountList = dataOp.FindAll(tableName).ToList();
-            foreach (var account in allAccountList.Where(c => c.Int("isInvalid") == 0 && c.Int("status") == 0))
+            var hitAccountList = allAccountList.Where(c => c.Int("isInvalid") == 0 && c.Int("status") == 0 && c.Text("deviceId") == "es95v6nhGH93ue0IDWVBAcMq").ToList();
+            foreach (var account in hitAccountList.Take(1000))
+           // foreach (var account in allAccountList.Where(c => c.Int("isInvalid") ==1 && c.Int("EnterpriseGuidByKeyWord_APP") == 0))
             {
                 this.comboBox1.Items.Add(account.Text("deviceId"));
                 //  DBChangeQueue.Instance.EnQueue(new StorageData() { Name = tableName, Document = new BsonDocument().Add("isInvalid", "1"), Query = Query.EQ("deviceId", account.Text("deviceId")), Type = StorageType.Update });
@@ -3588,19 +3733,25 @@ namespace DayLifeDataInitialFromDNFTest
         }
         private void button33_Click(object sender, EventArgs e)
         {
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+             var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
+            //var connStr = "mongodb://MZsa:(MZdba35)@59.61.72.35/MZCityLibrary";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             MongoOperation _mongoDBOp = new MongoOperation(connStr);
             var tableName = "QCCDeviceAccount";//设备账号注册
             //appId=80c9ef0fb86369cd25f90af27ef53a9e&deviceId=UygxNMGUAhsBAFbml5Qf92Ie&version=9.2.0&deviceType=android&os=&timestamp=1474629307274&sign=257c174551b3bf1660daa3797f71ce3014bf0827
-            var allAccountNameList = dataOp.FindAll(tableName).Select(c => c.Text("deviceId")).ToList();
-
+            var allAccountNameList = dataOp.FindFieldsByQuery(tableName, null, new string[] { "deviceId" }).Select(c => c.Text("deviceId")).ToList();
+          
 
             var textStr = this.richTextBox1.Text.Replace("sig\nn", "sign").Replace("\t", " ").Split(new string[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
             var sb = new StringBuilder();
             var insertCount = 0; var updateCount = 0;
             foreach (var textStrArr in textStr)
             {
+                //if (textStrArr.Contains("appId="))
+                //{
+                //    sb.AppendFormat(textStrArr + "\n");
+                //    continue;
+                //}
 
                 if (string.IsNullOrEmpty(textStrArr)) continue;
                 var updateBson = new BsonDocument();
@@ -3640,7 +3791,7 @@ namespace DayLifeDataInitialFromDNFTest
                 sb.AppendFormat("AccessToken={0}\n", AccessToken.Trim());
             }
             this.richTextBox2.Text = sb.ToString();
-            StartDBChangeProcessQuick(_mongoDBOp);
+             StartDBChangeProcessQuick(_mongoDBOp);
             MessageBox.Show("succeed" + insertCount.ToString() + "|" + updateCount.ToString());
         }
 
@@ -3648,14 +3799,14 @@ namespace DayLifeDataInitialFromDNFTest
         {
             //var htmlDoc = new JToken(){};
             //htmlDoc
-            MessageBox.Show( ConvertDecimalNCRToString("&#27468;&#33673;&#23045;"));
-            this.richTextBox1.Text+=HttpUtility.HtmlDecode("sds&#27468;&#33673;&#23045;");
+            MessageBox.Show(ConvertDecimalNCRToString("&#27468;&#33673;&#23045;"));
+            this.richTextBox1.Text += HttpUtility.HtmlDecode("sds&#27468;&#33673;&#23045;");
         }
 
         public string ConvertDecimalNCRToString(string hex)
         {
             string myString = hex.Replace("&#", "");
-            String[] split = myString.Split(new string[]{";"},StringSplitOptions.RemoveEmptyEntries);
+            String[] split = myString.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             StringBuilder strResult = new StringBuilder();
             for (int i = 0; i <= split.Length - 1; i++)
             {
@@ -3745,7 +3896,7 @@ namespace DayLifeDataInitialFromDNFTest
         private void button36_Click(object sender, EventArgs e)
         {
 
-            var connStr = "mongodb://sa:dba@59.61.72.34/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
             MongoOperation _mongoDBOp = new MongoOperation(connStr);
             var tableName = "QCCEnterpriseKey";
@@ -3939,70 +4090,236 @@ namespace DayLifeDataInitialFromDNFTest
             this.richTextBox1.Text = sb.ToString();
             StartDBChangeProcessQuick(_mongoDBOp);
         }
+       // string filterColumn = "telephone";
         string filterColumn = "telephone";
+         
+
+        /// <summary>
+        /// 数据能否导出
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns></returns>
+        private bool DataNeedSkip_Enterprise(BsonDocument doc)
+        {
+           
+            //if (enterpriseNameList.Contains(doc.Text(filterColumn))) return true;
+            doc.Set("telephone",doc.Text("telephone").Replace("`", ""));
+            doc.Set("telephone", doc.Text("telephone").Replace("+86", "")); 
+            if(enterpriseNameList.Contains(doc.Text(filterColumn)) )return true;
+            if(doc.Text("telephone").Length < 11 )return true;
+            if (!doc.Text("telephone").StartsWith("1")&&!doc.Text("telephone").StartsWith("01")&& !doc.Text("telephone").StartsWith("+861")) return true;
+            if (doc.Text("telephone").Contains("-")) return true;
+            //if (doc.Date("date").Year <2004)
+            //{
+            //    return true;
+            //} 
+            // var skip = enterpriseNameList.Contains(doc.Text(filterColumn));
+            
+            //var keyWord = "建筑";
+            //var isValid = doc.Text("name").Contains(keyWord) || doc.Text("domain").Contains(keyWord) || doc.Text("operationDomain").Contains(keyWord);
+            //if (!isValid || skip)
+            //{
+            //    return true;
+            //}
+            //var reg_capi_desc = doc.Text("reg_capi_desc");
+            //if (string.IsNullOrEmpty(reg_capi_desc)) return true;
+            //var moneyStr = reg_capi_desc.Replace("万元人民币", "").Replace("万人民币", "").Replace("万美元", "").Replace("万欧元", "").Replace("万港币", "").Replace("万元", "");
+            //double money = 0;
+            //if (double.TryParse(moneyStr, out money) == false) return true;
+            //if (reg_capi_desc.Contains("万人民币") || reg_capi_desc.Contains("万元人民币"))
+            //{
+
+            //}
+            //else if (reg_capi_desc.Contains("万美元"))
+            //{
+            //    money = money * 6.9014;
+            //}
+            //else if (reg_capi_desc.Contains("万欧元"))
+            //{
+            //    money = money * 7.4328;
+            //}
+            //else if (reg_capi_desc.Contains("万港币"))
+            //{
+            //    money = money * 0.89;
+
+            //}
+            //if (money >= 500)
+            //{
+            //    return false;
+            //}
+            //else
+            //{
+            //    return true;
+            //}
+            return false;
+        }
+
+        /// <summary>
+        /// 美观数据过滤
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns></returns>
+        private bool DataNeedSkip_MT(BsonDocument doc)
+        {
+            if (doc.Text("showType") != "food") return true;
+            //if (enterpriseNameList.Contains(doc.Text(filterColumn))) return true;
+            //var keyWord="建筑装饰";
+            var skip = enterpriseNameList.Contains(doc.Text(filterColumn)) || doc.Text("phone").Length != 11 || !doc.Text("phone").StartsWith("1");
+            if (skip) return skip;
+            return false;
+        }
+        /// <summary>
+        /// 地块数据过滤
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns></returns>
+        private bool DataNeedSkip_Land(BsonDocument doc)
+        {
+           
+            return false;
+        }
+        string tableName = "";//设备账号注册
+        QueryComplete exportQuery = null;
+        List<string> elementList = new List<string>();
+        /// <summary>
+        /// 企业
+        /// </summary>
+        private void ExportConditionInitial_Enterprise()
+        {
+            tableName = "QCCEnterpriseKey_ShenZhen";//设备账号注册
+            exportQuery = Query.And(Query.Exists("telephone", true), Query.NE("telephone", ""), Query.And(Query.NE("status", "吊销"), Query.NE("status", "注销")));
+            elementList = new List<string>() { "cityName", "telephone",  "webSite", "name", "oper_name", "domain", "operationDomain", "shortStatus", "type", "reg_capi_desc", "address", "registrar", "date" };
+            //"email",
+        }
+        /// <summary>   
+        /// 美团
+        /// </summary>
+        private void ExportConditionInitial_MT()
+        {
+            filterColumn = "phone";
+            tableName = "CityEnterpriseInfo_MT";//设备账号注册
+            var hitCityObj = Get124MongoOp().FindOne("CityInfo_MT", Query.EQ("name", "南京"));
+            var cityQuery = Query.And(Query.EQ("cityId", hitCityObj.Int("cityId")));
+            exportQuery = Query.And(cityQuery, Query.Exists("phone", true), Query.NE("phone", ""));
+           
+            elementList =   new List<string>() { "addr", "phone", "name", "areaName", "cateName","showType","channel" };
+        }
+
+        /// <summary>
+        /// 地块
+        /// </summary>
+        private void ExportConditionInitial_Land()
+        {
+            filterColumn = "";
+            tableName = "LandFang";//设备账号注册
+            exportQuery = Query.And(Query.Exists("竞得方", true), Query.NE("竞得方", ""),Query.EQ("所在地","南京"));
+            elementList = new List<string>() { };
+        }
+        private void ExportConditionInitial()
+        {
+            ExportConditionInitial_Enterprise();
+           //  ExportConditionInitial_Land(); 
+          // ExportConditionInitial_MT();
+        }
+        private bool DataNeedSkip(BsonDocument doc)
+        {
+          // return DataNeedSkip_Land(doc);
+            return DataNeedSkip_Enterprise(doc);
+            // return DataNeedSkip_MT(doc);
+           
+        }
+        private BsonDocument DataFix(BsonDocument doc)
+        {
+            ////if (doc.ContainsColumn("地块评估&gt;&gt; 地块编号"))
+            ////{
+            ////    doc.Set("地块编号", doc.Text("地块评估&gt;&gt; 地块编号"));
+            ////    doc.Remove("地块评估&gt;&gt; 地块编号");
+            ////}
+            return doc;
+        }
         private void button37_Click(object sender, EventArgs e)
         {
             MongoConnectionStringBuilder builder = new MongoConnectionStringBuilder();
-            builder.Server = new MongoServerAddress("59.61.72.34", 27017);
+            builder.Server = new MongoServerAddress("192.168.1.124", 37088);
             builder.DatabaseName = "SimpleCrawler";
-            builder.Username = "sa";
-            builder.Password = "dba";
+            builder.Username = "MZsa";
+            builder.Password = "MZdba";
             builder.SocketTimeout = new TimeSpan(00, 03, 59);
             var _mongoDBOp = new MongoOperation(builder);
             var dataOp = new DataOperation(new MongoOperation(builder));
             var cityName = this.richTextBox1.Text.Trim();
-            var tableName = "QCCEnterpriseKey";//设备账号注册
+            ExportConditionInitial();
+           // tableName = "CityEnterpriseInfo_MT";
+           // filterColumn = "phone";
             //appId=80c9ef0fb86369cd25f90af27ef53a9e&deviceId=UygxNMGUAhsBAFbml5Qf92Ie&version=9.2.0&deviceType=android&os=&timestamp=1474629307274&sign=257c174551b3bf1660daa3797f71ce3014bf0827
             //var enterpriseList = dataOp.FindAllByQuery(tableName, Query.And(Query.EQ("cityName", "厦门"))).OrderBy(c => c.Text("cityName")).ThenBy(c => c.Text("domain")).ThenBy(c => c.Text("reg_capi_desc")).ToList();
-            var query = Query.And(Query.EQ("cityName", cityName), Query.Matches("type", "个"), Query.And(Query.NE("status", "吊销"), Query.NE("status", "注销")));
-           // var query = Query.And(Query.EQ("cityName", cityName), Query.Matches("date", "2016"));
-           // var query = Query.And(Query.EQ("cityName", cityName),Query.Matches("date", "2016"), Query.Exists("telephone", true), Query.NE("telephone", ""), Query.And(Query.NE("status", "吊销"), Query.NE("status", "注销")));
+          
+            // var query = Query.And(Query.EQ("cityName", cityName), Query.Matches("date", "2016"));
+            // var query = Query.And(Query.EQ("cityName", cityName),Query.Matches("date", "2016"), Query.Exists("telephone", true), Query.NE("telephone", ""), Query.And(Query.NE("status", "吊销"), Query.NE("status", "注销")));
             //var query = Query.And(Query.EQ("cityName", "嘉兴"), Query.EQ("isUserUpdate", "1"), Query.Exists("webSite", true), Query.NE("webSite", ""), Query.Or(Query.EQ("shortStatus", "存续"), Query.EQ("shortStatus", "在业")));
             //var query = Query.And(Query.EQ("cityName", "深圳"), Query.EQ("isUserUpdate", "1"), Query.And(Query.NE("status", "吊销"), Query.NE("status", "注销")));
-            var allCount = dataOp.FindCount(tableName, query);
-            //var enterpriseList = dataOp.FindAllByQuery(tableName, query);//oper_name
-            var elementList = new List<string>() { "cityName", "name", "telephone", "email", "webSite", "oper_name", "domain", "operationDomain", "shortStatus", "type", "reg_capi_desc", "address", "registrar", "date", "limitDate" };
-
-            //var sb=new StringBuilder();
-
-            //foreach (var enterprise in enterpriseList )
-            //{
-
-            //    foreach (var elem in elementList)
-            //    {
-            //        sb.AppendFormat("{0}\t", enterprise.Text(elem));
-            //    }
-            //     sb.AppendFormat("\n");
-            //}
-
-
-            long pageCount;
-            var pageSize = 50000;
-            if (allCount % pageSize == 0)
-                pageCount = allCount / pageSize;
-            else
-                pageCount = allCount / pageSize + 1;
-            for (var index = 1; index <= pageCount; index++)
+          
+            //var enterpriseCount = dataOp.FindCount(tableName, query1);//oper_name
+           // var elementList = new List<string>() { "cityName", "name", "telephone", "email", "webSite", "oper_name", "domain", "operationDomain", "shortStatus", "type", "reg_capi_desc", "address", "registrar", "date"};
+            
+            //var elementList_MT = new List<string>() { "addr", "phone", "name", "areaName", "cateName","showType","channel" };
+            // elementList = elementList_MT;
+            //var domianList = new List<string>() { "餐饮业", "零售业", "软件和信息技术服务业", "计算机、通信和其他电子设备制造业", "批发业" };
+            //var domianList = new List<string>() { "餐饮业" };
+           // var domianList = new List<string>() { "医院","酒店","餐饮","教育","物业" };
+            var domianList = new List<string>() { "" };
+            var allHitCount = 0;
+            foreach (var domain in domianList)
             {
-                var xlsDoc = new XlsDocument();
-
-                var skipCount = (index - 1) * pageSize;
-
-                //var enterpriseList = dataOp.FindLimitByQuery(tableName, query, new SortByDocument(), skipCount, pageSize).SetFields(elementList.ToArray()).ToList();
-                var enterpriseList = dataOp.FindLimitFieldsByQuery(tableName, query, new SortByDocument(), skipCount, pageSize, elementList.ToArray()).ToList();
-                BsonListToExcel(xlsDoc, enterpriseList, elementList, index);
-                using (MemoryStream ms = new MemoryStream())
+               // var cityQuery = Query.And(Query.EQ("cityName", cityName));
+             
+                //var query = Query.And(Query.Exists("telephone", true), Query.NE("telephone", ""), Query.And(Query.NE("status", "吊销"), Query.NE("status", "注销")));
+                //美团餐饮
+                //var cityQuery = Query.And(Query.EQ("cityId", 20));
+                //var query = Query.And(cityQuery, Query.Exists("phone", true), Query.NE("phone", ""));
+                //var query = Query.And(cityQuery);
+                if (!string.IsNullOrEmpty(domain))
                 {
-                    xlsDoc.FileName = index.ToString() + ".xls";
-                    xlsDoc.Save(true);
+                    exportQuery = Query.And(Query.Matches("operationDomain", new Regex(domain)), exportQuery);
+                }
+                var allCount = dataOp.FindCount(tableName, exportQuery);
+              
+                long pageCount;
+                var pageSize = 40000;
+                if (allCount % pageSize == 0)
+                    pageCount = allCount / pageSize;
+                else
+                    pageCount = allCount / pageSize + 1;
+                //SortByDocument sort = new SortByDocument { { "domain", -1 } };
+                SortByDocument sort = new SortByDocument();
+                for (var index = 1; index <= pageCount; index++)
+                {
+                    var xlsDoc = new XlsDocument();
 
+                    var skipCount = (index - 1) * pageSize;
+
+                    //var enterpriseList = dataOp.FindLimitByQuery(tableName, query, new SortByDocument(), skipCount, pageSize).SetFields(elementList.ToArray()).ToList();
+                    var enterpriseList = dataOp.FindLimitFieldsByQuery(tableName, exportQuery, sort, skipCount, pageSize, elementList.ToArray()).ToList();
+                    var rowIndex= BsonListToExcel(xlsDoc, enterpriseList, elementList, index);
+                    allHitCount += rowIndex;
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        xlsDoc.FileName = string.Format("{0}_count_【{1}】.xls", index.ToString(), rowIndex.ToString());
+                        xlsDoc.Save(true);
+                         
+                    }
                 }
             }
 
-            this.richTextBox1.Text = "succeed";
+            this.richTextBox1.Text = "succeed" + allHitCount.ToString();
         }
+     
+
+         
+
+
         private BloomFilter<string> enterpriseNameList = new BloomFilter<string>(2000000);
-        private void BsonListToExcel(XlsDocument xlsDoc, List<BsonDocument> docList, List<string> elementList, int page)
+        private int BsonListToExcel(XlsDocument xlsDoc, List<BsonDocument> docList, List<string> elementList, int page)
         {
 
 
@@ -4021,6 +4338,10 @@ namespace DayLifeDataInitialFromDNFTest
             #region 宽度调整
             ushort index = 0;
             var rowIndex = 1;
+            if (elementList.Count <= 0 && docList.Count() > 0)
+            {
+                elementList = docList.FirstOrDefault().Elements.Select(c => c.Name).ToList();
+            }
             foreach (var elem in elementList)
             {
                 ColumnInfo firstCol = new ColumnInfo(xlsDoc, sheet);
@@ -4034,37 +4355,40 @@ namespace DayLifeDataInitialFromDNFTest
 
             }
 
-            rowIndex++;
-            foreach (var doc in docList)
+            rowIndex++;//下一行
+            foreach (var _doc in docList)
             {
+                var doc = DataFix(_doc);
+                if (!string.IsNullOrEmpty(filterColumn))
+                {
+                    if (DataNeedSkip(doc))
+                    {
+
+                        continue;
+                    }
+                    else
+                    {
+                        enterpriseNameList.Add(doc.Text(filterColumn));
+                    }
+                }
                 var colIndex = 1;
+                var cellList= new List<string>();
                 foreach (var elem in elementList)
                 {
                     var value = doc.Text(elem);
                     if (elem == "oper_name" && value.Length >= 2)
                     {
-                        value = value.Substring(0, 1) + "姓";
+                         value = value.Substring(0, 1) + "姓";
                     }
-                    if (elem == filterColumn)
-                    {
-                        if (elem == "name" && enterpriseNameList.Contains(value))
-                        {
-                           //已存在重复的字段
-                            break;
-                        }
-                        else
-                        {
-                            enterpriseNameList.Add(value);
-                        }
-                    }
-                    cells.Add(rowIndex, colIndex++, value, dataXF);
-                }
 
-                rowIndex++;
+                    cells.Add(rowIndex, colIndex++, value, dataXF);
+                    
+                }
+               rowIndex++;
             }
             #endregion
 
-
+            return rowIndex;
 
         }
         private void button38_Click(object sender, EventArgs e)
@@ -4109,7 +4433,7 @@ namespace DayLifeDataInitialFromDNFTest
             ShowMessageInfo("完成", true);
 
         }
-        public void ShowMessageInfo(string str, bool isAppend = false)
+        public void ShowMessageInfo(string str, bool isAppend = true)
         {
             richTextBox1.BeginInvoke(new Action(() =>
             {
@@ -4120,6 +4444,23 @@ namespace DayLifeDataInitialFromDNFTest
 
 
                 this.richTextBox1.AppendText(str);
+
+
+            })
+           );
+        }
+
+        public void ShowMessageInfo2(string str, bool isAppend = true)
+        {
+            richTextBox2.BeginInvoke(new Action(() =>
+            {
+                if (isAppend == false)
+                {
+                    this.richTextBox2.Clear();
+                }
+
+
+                this.richTextBox2.AppendText(str);
 
 
             })
@@ -4245,7 +4586,7 @@ namespace DayLifeDataInitialFromDNFTest
         }
         public MongoOperation GetMongoOperation()
         {
-            var connStr = "mongodb://sa:dba@192.168.1.230/SimpleCrawler";
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
             MongoConnectionStringBuilder builder = new MongoConnectionStringBuilder();
             builder.Server = new MongoServerAddress("192.168.1.230", 27017);
             builder.DatabaseName = "SimpleCrawler";
@@ -4481,28 +4822,28 @@ namespace DayLifeDataInitialFromDNFTest
         }
         public static string getCheckSum(String appSecret, String nonce, String curTime)
         {
-            var str=appSecret + nonce + curTime;
-            
+            var str = appSecret + nonce + curTime;
+
             SHA1 sha1 = new SHA1CryptoServiceProvider();
             byte[] bytes_sha1_in = UTF8Encoding.Default.GetBytes(str);
             byte[] bytes_sha1_out = sha1.ComputeHash(bytes_sha1_in);
             string str_sha1_out = BitConverter.ToString(bytes_sha1_out);
-             str_sha1_out = str_sha1_out.Replace("-", "");
+            str_sha1_out = str_sha1_out.Replace("-", "");
             return str_sha1_out;
         }
-      
+
         private void button45_Click(object sender, EventArgs e)
         {
             hi.Url = "https://api.netease.im/sms/sendcode.action";
-             var minDate=DateTime.Parse("1970-01-01");  
-             var totalSeconds=(DateTime.Now - minDate).TotalSeconds;
-             string appKey = "1d44dbc95eef958f4bd47e0747e8df1c";
-             string appSecret = "76c5f266b4f7";
-             string nonce = "12345";
-             string curTime = Math.Round(totalSeconds,0).ToString();
-             string checkSum = getCheckSum(appSecret, nonce, curTime).ToLower();
+            var minDate = DateTime.Parse("1970-01-01");
+            var totalSeconds = (DateTime.Now - minDate).TotalSeconds;
+            string appKey = "1d44dbc95eef958f4bd47e0747e8df1c";
+            string appSecret = "76c5f266b4f7";
+            string nonce = "12345";
+            string curTime = Math.Round(totalSeconds, 0).ToString();
+            string checkSum = getCheckSum(appSecret, nonce, curTime).ToLower();
             //saics
-             hi.PostData = "mobile=18638808245";
+            hi.PostData = "mobile=18638808245";
             //date=&end_date=&title=&content=&key=%E5%85%AC%E5%8F%B8&database=saic&search_field=all&search_type=yes&page=2
             hi.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko";
             hi.HeaderSet("Content-Type", "application/x-www-form-urlencoded");
@@ -4550,11 +4891,11 @@ namespace DayLifeDataInitialFromDNFTest
         private void button47_Click(object sender, EventArgs e)
         {
             var helper = new LeetCodeHelper();
-            var num = new int[] {3, 2, 2 ,3};
-            var result = helper.RemoveElement(num,3);
+            var num = new int[] { 3, 2, 2, 3 };
+            var result = helper.RemoveElement(num, 3);
         }
 
-        #region leetCode 
+        #region leetCode
         /// <summary>
         /// Given nums = [2, 7, 11, 15], target = 9, Because nums[0] + nums[1] = 2 + 7 = 9, return [0, 1].
         /// </summary>
@@ -4563,15 +4904,15 @@ namespace DayLifeDataInitialFromDNFTest
         /// <returns></returns>
         public int[] TwoSum(int[] nums, int target)
         {
-            List<int> result =new List<int>() ;
-           
-            for (var i = 0; i <= nums.Length - 1 ; i++)
+            List<int> result = new List<int>();
+
+            for (var i = 0; i <= nums.Length - 1; i++)
             {
                 var curValue = nums[i];
-                
+
                 var nextValue = target - curValue;
 
-                for (var j = i + 1; j <= nums.Length - 1 ; j++)
+                for (var j = i + 1; j <= nums.Length - 1; j++)
                 {
                     if (nums[j] == nextValue)
                     {
@@ -4579,7 +4920,7 @@ namespace DayLifeDataInitialFromDNFTest
                         result.Add(j);
                     }
                 }
-            
+
             }
 
             return result.ToArray();
@@ -4596,10 +4937,12 @@ namespace DayLifeDataInitialFromDNFTest
             var needChange = 0;
             if (s.Length < 6)
             {
-                needChange= 6 - s.Length;
+                needChange = 6 - s.Length;
                 return needChange;
             }
-            if (s.Length > 20) { needChange= Math.Abs(20-s.Length);
+            if (s.Length > 20)
+            {
+                needChange = Math.Abs(20 - s.Length);
                 if (needChange > 2)
                 {
                     return needChange;
@@ -4610,12 +4953,12 @@ namespace DayLifeDataInitialFromDNFTest
                 if (s.ToLower() == s)//allLower
                 {
                     needChange = needChange + 1;
-                    
+
                 };
                 if (s.ToUpper() == s)//allUpler
                 {
                     needChange = needChange + 1;
-                   
+
                 }
                 for (var c = '0'; c <= '9'; c++)
                 {
@@ -4633,13 +4976,13 @@ namespace DayLifeDataInitialFromDNFTest
                 if (s.IndexOf(string.Format("{0}{1}{2}", c, c, c)) != -1)
                 {
                     finalNeedChange = finalNeedChange + 1;
-                   
+
                 }
             }
 
-            return Math.Max(needChange,finalNeedChange);
+            return Math.Max(needChange, finalNeedChange);
         }
-       
+
         #endregion
 
         private void button48_Click(object sender, EventArgs e)
@@ -4650,192 +4993,1596 @@ namespace DayLifeDataInitialFromDNFTest
             var tableName = "ProjectHouseStatic";//设备账号注册
             var updateBson = new BsonDocument().Add("cityName", "深圳");
 
-            dataOp.Update(tableName,Query.Exists("cityName",false), updateBson);
+            dataOp.Update(tableName, Query.Exists("cityName", false), updateBson);
+        }
+
+        private void button49_Click(object sender, EventArgs e)
+        {
+            //https://appapi.3g.fang.com/LandApp/SendSMS?isencrypt=20150303&messagename=CheckMobile&mode=reg&imei=133524428521974&mobile=gjhepUya1v4%252Bn6SKDUK7sg%253D%253D&wirelesscode=eefb7c88d8489048649a57413b715b0a&r=zi6zhtmPAL8%3D
+            //var decodr = HttpUtility.UrlEncode("gjhepUya1v4+n6SKDUK7sg==");
+            var result = HttpUtility.UrlDecode(this.richTextBox1.Text);
+            ////var str = Encode(result, "soufunss");
+            //var str1 = Encode("15959266824", "soufunss");
+            //var result1 = DoubleUrlEncode(str1, Encoding.UTF8);
+            //var r2 = Decode("6cFqC2ZmBQA=", "soufunss");
+            CompareInfo myComp = CultureInfo.InvariantCulture.CompareInfo;
+            CompareOptions myOptions = CompareOptions.None;
+            var value1 = myComp.Compare("H", "h", CompareOptions.Ordinal);
+           
+            var r1 = GetHuiCongAuthorCode(this.richTextBox1.Text);
+            this.richTextBox2.Text = r1;
+        }
+
+        /// <summary>
+        /// 获取慧聪网验证码
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private static string GetHuiCongAuthorCode(string url)
+        {
+            url = url.Replace("http://z.hc360.com", "").Replace("http://openapi.m.hc360.com","");
+            var urlArr = url.Split(new string[] { "?" }, StringSplitOptions.RemoveEmptyEntries);
+            var queryStr = string.Empty;
+            var pathStr = string.Empty;
+            if (urlArr.Length >= 1)
+            {
+                pathStr = urlArr[0];
+            }
+            if (urlArr.Length >= 2)
+            {
+               
+              queryStr = GetTreerString(urlArr[1]);
+            }
+            var signKey="lifgnfdfg2896934133gwnkdstvjxeh";
+            var result = UrlEncode(pathStr, Encoding.UTF8) + UrlEncode(queryStr, Encoding.UTF8);
+            return getMd5Hash(result + signKey);
+         }
+
+      
+        public static String GetTreerString(String paramString)
+        {
+          
+            StringBuilder localStringBuilder = new StringBuilder();
+            Dictionary<string, string> paramMap = getParamsMap(paramString);
+            var keyList = paramMap.Select(c => c.Key).ToList();
+            IComparer<string> compare = new MyStringComparer<string>();
+            keyList.Sort(compare);//模拟treeMap排序
+            foreach (var key in keyList)
+            {
+                string str1 = key;
+                String str2 = paramMap[key];
+                localStringBuilder.Append(str1 + "=" + str2);
+            }
+            return localStringBuilder.ToString();
         }
 
 
-        //List<string> urlFilter = new List<string>();
-        //private bool IsKeyWordUrlSplited_APP(DataReceivedEventArgs args, int firstRecordCount, JToken htmlDoc)
-        //{
-        //    if (firstRecordCount <= 1000) return false;
-        //    //registcapiNew 注册资本//startdateNew 成立日期//statuscodeNew 企业状态 industrycodeNew 行业门类
-        //    var registCapiBeginParam = GetUrlParam(args.Url, "registCapiBegin");
-        //    var registCapiEndParam = GetUrlParam(args.Url, "registCapiEnd");
-        //    var statusCodeParam = GetUrlParam(args.Url, "statusCode");
-        //    var startDateBeginParam = GetUrlParam(args.Url, "startDateBegin");
-        //    var startDateEndParam = GetUrlParam(args.Url, "startDateEnd");
-        //    var industryCode = GetUrlParam(args.Url, "industryCode");
-        //    var subIndustryCode = GetUrlParam(args.Url, "subIndustryCode");
-        //    try
-        //    {
-        //        #region 行业门类大类
-        //        var industryDataValueList = GetFilterDataValue_App(htmlDoc, "industrycode");
-        //        if (industryDataValueList.Count() > 0 && string.IsNullOrEmpty(industryCode))
-        //        {
-        //            foreach (var dataValue in industryDataValueList)//2016
-        //            {
-        //                var curUrl = args.Url.Replace("&industryCode=", string.Format("&industryCode={0}", dataValue));
-        //                if (!urlFilter.Contains(curUrl))//防止重复爬取
-        //                {
-        //                    UrlQueue.Instance.EnQueue(new UrlInfo(curUrl));//添加条件过滤
-        //                    urlFilter.Add(curUrl);
-        //                }
-        //            }
-        //            return true;
+      
+ 
+        private static Dictionary<string, string> getParamsMap(String paramString)
+        {
+            Dictionary<string, string> localTreeMap = new Dictionary<string, string>();
+            String[] paramStringArr = paramString.Split(new string[]{"&"},StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            while (i < paramStringArr.Length)
+            {
+                String[] arrayOfString = paramStringArr[i].Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
+                localTreeMap.Add(arrayOfString[0], arrayOfString[1]);
+                i += 1;
+            }
+            return localTreeMap;
+        }
+        /// <summary>
+        /// 2次urldecode 大写
+        /// </summary>
+        /// <param name="temp"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        private static string DoubleUrlEncode(string temp, Encoding encoding)
+        {
+            return UrlEncode(UrlEncode(temp, Encoding.UTF8), Encoding.UTF8);
+        }
+        /// <summary>
+        /// 转化为大写的urldecode
+        /// </summary>
+        /// <param name="temp"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        private static string UrlEncode(string temp, Encoding encoding)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < temp.Length; i++)
+            {
+                string t = temp[i].ToString();
+                string k = HttpUtility.UrlEncode(t, encoding);
+                if (t == k)
+                {
+                    stringBuilder.Append(t);
+                }
+                else
+                {
+                    stringBuilder.Append(k.ToUpper());
+                }
+            }
+            return stringBuilder.ToString();
+        }
+        static string getMd5Hash(string input)
+        {
+            // Create a new instance of the MD5CryptoServiceProvider object.
+            MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
 
-        //        }
-        //        #endregion
-        //        #region 成立日期分支筛选
-        //        var dateDataValueList = GetFilterDataValue_App(htmlDoc, "startdateyear");
-        //        if (dateDataValueList.Count() > 0 && string.IsNullOrEmpty(startDateBeginParam) && string.IsNullOrEmpty(startDateEndParam))
-        //        {
-        //            foreach (var dataValue in dateDataValueList)//2016
-        //            {
-        //                var startDateBegin = string.Format("{0}0101", dataValue);
-        //                var startDateEnd = string.Format("{0}1231", dataValue);
-        //                if (dataValue == "0")
-        //                {
-        //                    startDateBegin = "0";
-        //                    startDateEnd = "0";
-        //                }
+            // Convert the input string to a byte array and compute the hash.
+            byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
 
-        //                var curUrl = args.Url.Replace("&startDateBegin=", string.Format("&startDateBegin={0}", startDateBegin));
-        //                curUrl = curUrl.Replace("&startDateEnd=", string.Format("&startDateEnd={0}", startDateEnd));
+            // Create a new Stringbuilder to collect the bytes
+            // and create a string.
+            StringBuilder sBuilder = new StringBuilder();
 
-        //                if (!urlFilter.Contains(curUrl))//防止重复爬取
-        //                {
-        //                    UrlQueue.Instance.EnQueue(new UrlInfo(curUrl));//添加条件过滤
-        //                    urlFilter.Add(curUrl);
-        //                }
-        //            }
-        //            return true;
-        //        }
-        //        #endregion
-        //        #region 行业门类大类
-        //        var subIndustryDataValueList = GetFilterDataValue_App(htmlDoc, "subindustrycode");
-        //        if (subIndustryDataValueList.Count() > 0 && string.IsNullOrEmpty(subIndustryCode))
-        //        {
-        //            foreach (var dataValue in subIndustryDataValueList)//2016
-        //            {
-        //                var curUrl = args.Url.Replace("&subIndustryCode=", string.Format("&subIndustryCode={0}", dataValue));
-        //                if (!urlFilter.Contains(curUrl))//防止重复爬取
-        //                {
-        //                    UrlQueue.Instance.EnQueue(new UrlInfo(curUrl));//添加条件过滤
-        //                    urlFilter.Add(curUrl);
-        //                }
-        //            }
-        //            return true;
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("X2"));
+            }
 
-        //        }
-        //        #endregion
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
+        }
+        public static string Encode(string source, string _DESKey)
+        {
+
+            StringBuilder sb = new StringBuilder();
+            using (DESCryptoServiceProvider des = new DESCryptoServiceProvider())
+            {
+                byte[] key = ASCIIEncoding.ASCII.GetBytes(_DESKey);
+                //byte[] iv = ASCIIEncoding.ASCII.GetBytes(_DESKey);
+                byte[] iv =new byte[8];
+                byte[] dataByteArray = Encoding.UTF8.GetBytes(source);
+                des.Mode = System.Security.Cryptography.CipherMode.CBC;
+                des.Key = key;
+                des.IV = iv;
+                string encrypt = "";
+                using (MemoryStream ms = new MemoryStream())
+                using (CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(dataByteArray, 0, dataByteArray.Length);
+                    cs.FlushFinalBlock();
+                   // encrypt =Base64.encode(ms.ToArray());
+                    encrypt = Convert.ToBase64String(ms.ToArray());
+                }
+                return encrypt;
+            }
+
+        }
+        /// <summary>
+        /// des解密
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string Decode(string source, string sKey)
+        {
+            byte[] inputByteArray = System.Convert.FromBase64String(source);//Encoding.UTF8.GetBytes(source);
+            using (DESCryptoServiceProvider des = new DESCryptoServiceProvider())
+            {
+                des.Key = ASCIIEncoding.ASCII.GetBytes(sKey);
+                //des.IV = ASCIIEncoding.ASCII.GetBytes(sKey);
+                des.IV =new byte[8];
+                System.IO.MemoryStream ms = new System.IO.MemoryStream();
+                using (CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(inputByteArray, 0, inputByteArray.Length);
+                    cs.FlushFinalBlock();
+                    cs.Close();
+                }
+                string str = Encoding.UTF8.GetString(ms.ToArray());
+                ms.Close();
+                return str;
+            }
+                
+        }
 
 
 
-        //        #region 企业状态筛选
-        //        var statusDataValueList = GetFilterDataValue_App(htmlDoc, "statuscode");
-        //        if (statusDataValueList.Count() > 0 && string.IsNullOrEmpty(statusCodeParam))
-        //        {
-        //            foreach (var statusCode in statusDataValueList)//2016
-        //            {
-        //                var curUrl = args.Url.Replace("&statusCode=", string.Format("&statusCode={0}", statusCode));
-        //                if (!urlFilter.Contains(curUrl))//防止重复爬取
-        //                {
-        //                    UrlQueue.Instance.EnQueue(new UrlInfo(curUrl));//添加条件过滤
-        //                    urlFilter.Add(curUrl);
-        //                }
-        //            }
-        //            return true;
-        //        }
-        //        #endregion
-        //        #region 注册资本分支筛选
-        //        var dataValueList = GetFilterDataValue_App(htmlDoc, "registcapi");
-        //        if (dataValueList.Count() > 0 && string.IsNullOrEmpty(registCapiBeginParam) && string.IsNullOrEmpty(registCapiEndParam))
-        //        {
-        //            foreach (var dataValue in dataValueList)
-        //            {
-        //                var dataValueArray = dataValue.Split(new string[] { "-" }, StringSplitOptions.RemoveEmptyEntries);
-        //                if (dataValueArray.Length >= 2)
-        //                {
-        //                    var registCapiBegin = dataValueArray[0];
-        //                    var registCapiEnd = dataValueArray[1];
-        //                    if (registCapiEnd == "0")
-        //                    {
-        //                        registCapiEnd = string.Empty;
-        //                    }
-        //                    var curUrl = args.Url;
-        //                    curUrl = curUrl.Replace("&registCapiBegin=", string.Format("&registCapiBegin={0}", registCapiBegin));
-        //                    curUrl = curUrl.Replace("&registCapiEnd=", string.Format("&registCapiEnd={0}", registCapiEnd));
-        //                    if (!urlFilter.Contains(curUrl))//防止重复爬取
-        //                    {
-        //                        UrlQueue.Instance.EnQueue(new UrlInfo(curUrl));//添加条件过滤
-        //                        urlFilter.Add(curUrl);
-        //                    }
-        //                }
-        //            }
-        //            return true;
-        //        }
-        //        #endregion
-        //    }
-        //    catch (Exception ex)
-        //    {
+        /// <summary>
+        /// AES解密
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="password"></param>
+        /// <param name="iv"></param>
+        /// <returns></returns>
+        public static string AESDecode(string text, string password, string iv)
+        {
+            RijndaelManaged rijndaelCipher = new RijndaelManaged();
 
-        //    }
-        //    return false;
-        //}
-        //private List<string> GetFilterDataValue_App(JToken groupItems, string name)
-        //{
+            rijndaelCipher.Mode = CipherMode.CBC;
 
-        //    List<string> result = new List<string>();
-        //    if (name == "registcapi")//后续此处可继续细化
-        //    {
-        //        result.Add("1-499");
-        //        result.Add("500-1000");
-        //        result.Add("1000-5000");
-        //        result.Add("5000-0");
-        //    }
-        //    else
-        //    {
-        //        var hitGourp = groupItems.Where(c => c["Key"].ToString() == name).FirstOrDefault();
-        //        if (hitGourp != null)
-        //        {
-        //            foreach (var item in hitGourp["Items"])
-        //            {
-        //                if (item["Count"].ToString() != "0")
-        //                {
-        //                    result.Add(item["Value"].ToString());
-        //                }
-        //            }
+            rijndaelCipher.Padding = PaddingMode.PKCS7;
 
-        //        }
-        //    }
-        //    return result;
-        //}
+            rijndaelCipher.KeySize = 128;
 
-        //public class JToken:IEnumerable<JToken>
-        //{
-        //    public JToken(string _key,string _value)
-        //    {
-        //        key = _key; value = _value;
-        //    }
-        //    public List<JToken> ObjList = new List<JToken>();
-        //    public  JToken this[string _key] { 
-        //      get{
-        //          var hitObj=ObjList.Where(c=>c.key==_key).FirstOrDefault();
-        //          if(hitObj!=null)
-        //          {
-        //          return hitObj;
-        //          }else{
-        //          return null;
-        //          }
-        //      }
-        //    }
-        //    public override string ToString()
-        //    {
-        //        return key;
+            rijndaelCipher.BlockSize = 128;
 
-        //    }
-        //    public string key;
-        //    public string value;
-        //}
+            byte[] encryptedData = Convert.FromBase64String(text);
+
+            byte[] pwdBytes = System.Text.Encoding.UTF8.GetBytes(password);
+
+            byte[] keyBytes = new byte[16];
+
+            int len = pwdBytes.Length;
+
+            if (len > keyBytes.Length) len = keyBytes.Length;
+
+            System.Array.Copy(pwdBytes, keyBytes, len);
+
+            rijndaelCipher.Key = keyBytes;
+
+            byte[] ivBytes = System.Text.Encoding.UTF8.GetBytes(iv);
+            rijndaelCipher.IV = ivBytes;
+
+            ICryptoTransform transform = rijndaelCipher.CreateDecryptor();
+
+            byte[] plainText = transform.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+
+            return Encoding.UTF8.GetString(plainText);
+
+        }
+
+        private void button50_Click(object sender, EventArgs e)
+        {
+            //LandApp/SendSMS?isencrypt=20150303&messagename=CheckMobile&mode=reg&imei=133524428521974&mobile=reMhd0XV%2FmW5T%2B7GMiqhoA%3D%3Dusja1
+            var url = HttpUtility.UrlDecode(this.richTextBox1.Text);
+            this.richTextBox2.Text = url;
+            return;
+            var str = this.richTextBox1.Text;
+            var textStrArr = this.richTextBox1.Text.Replace("sig\nn", "sign").Replace("\t", " ").Split(new string[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+            var sb = new StringBuilder();
+            var insertCount = 0; var updateCount = 0;
+            var lfaHelper = new SimpleCrawler.LandFangAppHelper();
+            foreach (var textStr in textStrArr)
+            {
+                if (textStr.Contains("https"))
+                {
+                    sb.Append(lfaHelper.FixUrl(textStr) + "\r");
+                    sb.Append(lfaHelper.FixIUserIdUrl(textStr,"3333") + "\r");
+                    
+                }
+            }
+            this.richTextBox2.Text = sb.ToString();
+        }
+
+        private void button51_Click(object sender, EventArgs e)
+        {
+             //GetAccessToken();
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.230:37088/SimpleCrawler";
+            DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
+            MongoOperation _mongoDBOp = new MongoOperation(connStr);
+            var tableName = "QCCDeviceAccount";//设备账号注册
+           // allAccountList = dataOp.FindAll(tableName).Where(c => c.Int("isInvalid") ==1 && c.Date("updateDate") <= DateTime.Parse("2016-10-10")).ToList();
+            allAccountList = dataOp.FindAll(tableName).Where(c => c.Int("isInvalid") != 1 && c.Int("status")!=1).ToList();
+           // allAccountList = dataOp.FindAll(tableName).Where(c => c.Int("isInvalid") ==0).ToList();
+            foreach(var  hitDevice in allAccountList){
+
+                UrlQueue.Instance.EnQueue(new UrlInfo(hitDevice.Text("deviceId")));
+           }
+            ShowMessageInfo(allAccountList.Count().ToString());
+            if (this.AppDeviceActiveTimer.Enabled == false)
+            {
+                this.AppDeviceActiveTimer.Enabled = true;
+                this.AppDeviceActiveTimer.Start();
+            }
+            else
+            {
+                this.AppDeviceActiveTimer.Enabled = false;
+                this.AppDeviceActiveTimer.Start();
+            }
+        }
+
+        private void AppDeviceActiveTimer_Tick(object sender, EventArgs e)
+        {
+            if (UrlQueue.Instance.Count > 0)
+            {
+                var deviceIdInfo = UrlQueue.Instance.DeQueue();
+                if (deviceIdInfo != null)
+                {
+
+                    var hitDevice = allAccountList.Where(c => c.Text("deviceId") == deviceIdInfo.UrlString).FirstOrDefault();
+                    if (hitDevice != null)
+                    {
+                        curDeviceInfo.deviceId = hitDevice.Text("deviceId");
+                        curDeviceInfo.accessToken = hitDevice.Text("accessToken");
+                        curDeviceInfo.refreshToken = hitDevice.Text("refreshToken");
+                        curDeviceInfo.timestamp = hitDevice.Text("timestamp");
+                        curDeviceInfo.sign = hitDevice.Text("sign");
+                        curDeviceInfo.isBusy = hitDevice.Text("isBusy");
+                        //this.richTextBox2.Text = curDeviceInfo.ToString();
+                        TestQCCAppAccess();
+                    }
+                }
+               
+            }
+        }
+
+        private void button52_Click(object sender, EventArgs e)
+        {
+            if (this.timer2.Enabled == false)
+            {
+                this.timer2.Enabled = true;
+                this.timer2.Start();
+            }
+            else
+            {
+                this.timer2.Enabled = false;
+                this.timer2.Stop();
+            }
+          //  return result;
+        }
+        /// <summary>
+        /// ip切换
+        /// </summary>
+        private void ChangeIp()
+        {
+            SimpleCrawler.HttpResult result = new SimpleCrawler.HttpResult();
+            try
+            {
+                var item = new SimpleCrawler.HttpItem()
+                {
+                    URL = "http://proxy.abuyun.com/switch-ip",
+                    Method = "get",//URL     可选项 默认为Get   
+                    // ContentType = "text/html",//返回类型    可选项有默认值 
+                    UserAgent = "okhttp/3.2.0",
+                    ContentType = "application/x-www-form-urlencoded",
+                };
+
+                // item.Header.Add("Content-Type", "application/x-www-form-urlencoded");
+                // hi.HeaderSet("Content-Length","154");
+                // hi.HeaderSet("Connection","Keep-Alive");
+                item.Header.Add("Proxy-Switch-Ip", "yes");
+                item.WebProxy = GetWebProxy();
+                result = http.GetHtml(item);
+                this.richTextBox1.Text = result.Html;
+            }
+            catch (WebException ex)
+            {
+
+            }
+            catch (TimeoutException ex)
+            {
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void button53_Click(object sender, EventArgs e)
+        {
+            //var connStr = "mongodb://MZsa:(MZdba35)@59.61.72.35/MZCityLibrary";
+            //DataOperation dataOp = new DataOperation(new MongoOperation(connStr));
+            //var result_1 = dataOp.FindCount("ProjectHouseDate", TypeConvert.NativeQueryToQuery("db.users.find({}, {\"order\": \"1\"})"));
+
+            var item = new SimpleCrawler.HttpItem()
+            {
+                URL = "http://ep.zhenro.com/checkLoginByUser.do?method=exec&action=login&userID=YXBleA%3D%3D",
+               // URL = "http://172.16.1.118/logout.do?userID=YXBleA%3D%3D",
+                Method = "get",//URL     可选项 默认为Get   
+                // ContentType = "text/html",//返回类型    可选项有默认值 
+                UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
+     
+            };
+            //item.WebProxy = GetWebProxy();
+            //YXBleA%3D%3D YXBleDI%3D Cookie: JSESSIONID=E5C4045AFB156539D819947C0AB2F696.server2; LBCLUSTERID=livebos_node.server2; UserID=apex2; PortalToken=E5C4045AFB156539D819947C0AB2F696.server2; apexSSO=YXBleDI%3D
+            //item.Cookie = "JSESSIONID=EF0AD04DBD1C7682038978D032642EEA.server5; LBCLUSTERID=livebos_node.server5; UserID=apex2; PortalToken=EF0AD04DBD1C7682038978D032642EEA.server5; apexSSO=YXBleDI%3D";
+            //item.Cookie = "JSESSIONID=95F1E856B5A4671F97173EAE3809DE8C;apexSSO=YXBleDE%3D";
+            item.Cookie = "JSESSIONID=1746ACD753901F81C89A70F5F6EC471B.server5; ";
+            item.Header.Add("Accept-Encoding", "gzip, deflate");
+            item.Header.Add("DNT", "1");
+            var result = http.GetHtml(item);
+            this.richTextBox1.Text = result.Html;
+        }
+        private static string GetZhiLianGuidFromUrl(string url)
+        {
+            var beginStrIndex = url.LastIndexOf("/");
+            var endStrIndex = url.LastIndexOf(".");
+            if (beginStrIndex != -1 && endStrIndex != -1)
+            {
+                if (beginStrIndex > endStrIndex)
+                {
+                    var temtp = beginStrIndex;
+                    beginStrIndex = endStrIndex;
+                    endStrIndex = temtp;
+                }
+                var queryStr = url.Substring(beginStrIndex + 1, endStrIndex - beginStrIndex - 1);
+                return queryStr;
+            }
+            return string.Empty;
+        }
+        /// <summary>
+        /// 将销售专员/助理 游戏开发/设计 转换
+        /// </summary>
+        /// <param name="jobCatStr"></param>
+        /// <param name="keyWordArr"></param>
+        /// <param name="akey"></param> 
+        /// <param name="bkey"></param>
+        /// <returns></returns>
+        private string[] SplitFix(string jobCatStr, string[] keyWordArr,string akey,string bkey)
+        {
+            if (jobCatStr.Contains(akey) && keyWordArr.Contains(bkey) && keyWordArr.Length > 1)
+            {
+                var firstKW = keyWordArr[0].Replace(akey, "");
+
+                for (var i = 1; i < keyWordArr.Length; i++)
+                {
+                    keyWordArr[i] = firstKW + keyWordArr[i];
+                }
+            }
+            return keyWordArr;
+        }
+        private void button54_Click(object sender, EventArgs e)
+        {
+            var connStr = "mongodb://MZsa:MZdba@192.168.1.124:37088/SimpleCrawler";
+            var _mongoDBOp = new MongoOperation(connStr);
+            var tableName = "_51JobPosition_Fix";//ZhiLianFullPosition_Fix _51JobNewPosition_Fix
+            var guidColumn = new string[] {  "jobCategories" };
+            //var allJobCatList = _mongoDBOp.FindAll(tableName).SetFields("url").Select(c=>c.Text("url")).ToList();
+            //foreach (var url in allJobCatList)
+            //{
+            //    var guid = GetZhiLianGuidFromUrl(url);
+            //    DBChangeQueue.Instance.EnQueue(new StorageData() { Document = new BsonDocument().Add("guid", guid), Name = tableName, Query = Query.And(Query.EQ("url", url)), Type = StorageType.Update });
+            //}
+            var allJobCatList = _mongoDBOp.FindAll(tableName, Query.Exists("catGuid", false)).SetFields(guidColumn).Select(c => c.Text("jobCategories")).Distinct().Where(c => c != "").ToList();
+            var allCatList = _mongoDBOp.FindAll("JobCategory").SetFields("jobCategory", "guid", "domain").ToList();
+            var sb = new StringBuilder();
+            var storageDataList = new List<StorageData>();
+            foreach (var _jobCatStr in allJobCatList)
+            {
+                var jobCatStr = _jobCatStr.Replace(",", "/");
+
+                if (string.IsNullOrEmpty(jobCatStr))
+                {
+                    continue;
+                }
+                var hitJobCatObj = allCatList.Where(c => c.Text("jobCategory") == jobCatStr || c.Text("remark").Contains(jobCatStr)).FirstOrDefault();
+                if (hitJobCatObj != null)
+                {
+                    DBChangeQueue.Instance.EnQueue(new StorageData() { Document = new BsonDocument().Add("catGuid", hitJobCatObj.Text("guid")), Name = tableName, Query = Query.And(Query.EQ("jobCategories", jobCatStr)), Type = StorageType.Update });
+                }
+                else
+                {
+                   
+                    var keyWordArr = jobCatStr.Split(new string[] { "/","," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (jobCatStr == "渠道/分销专员")
+                    {
+                        keyWordArr[0] = "渠道专员";
+                    }
+                    if (jobCatStr.Contains("专员") && keyWordArr.Contains("助理")&&keyWordArr.Length>1)
+                    {
+                        keyWordArr = SplitFix(jobCatStr, keyWordArr, "专员", "助理");
+                    }
+                    if (jobCatStr.Contains("设计") && keyWordArr.Contains("开发") && keyWordArr.Length > 1)
+                    {
+                        keyWordArr = SplitFix(jobCatStr, keyWordArr, "设计", "开发");
+                    }
+                    if (jobCatStr.Contains("培训师") && keyWordArr.Contains("讲师") && keyWordArr.Length > 1)
+                    {
+                        keyWordArr = SplitFix(jobCatStr, keyWordArr, "培训师", "讲师");
+                    }
+                    if (jobCatStr.Contains("经理") && keyWordArr.Contains("主管") && keyWordArr.Length > 1)
+                    {
+                        keyWordArr = SplitFix(jobCatStr, keyWordArr, "经理", "主管");
+                    }
+                    if (jobCatStr.Contains("主管") && keyWordArr.Contains("专员") && keyWordArr.Length > 1)
+                    {
+                        keyWordArr = SplitFix(jobCatStr, keyWordArr, "主管", "专员");
+                    }
+                   
+                    if (jobCatStr == "质量管理/测试工程师")
+                    {
+                        keyWordArr[0] = "质量管理工程师"; keyWordArr[1] = "质量测试工程师";
+                    }
+                    if (jobCatStr == "食品/饮料检验")
+                    {
+                        keyWordArr[0] = "食品检验"; keyWordArr[1] = "饮料检验";
+                    }
+                    if (jobCatStr == "供应商/采购质量管理")
+                    {
+                        keyWordArr[0] = "供应商质量管理"; keyWordArr[1] = "采购质量管理";
+                    }
+                     if (jobCatStr == "护士/护理人员")
+                    {
+                        keyWordArr[0] = "护士人员"; keyWordArr[1] = "护理人员";
+                    }
+                     if (jobCatStr == "网站运营总监/经理")
+                    {
+                        keyWordArr[0] = "网站运营总监"; keyWordArr[1] = "网站运营经理";
+                    }
+                     if (jobCatStr == "品牌/连锁招商管理")
+                    {
+                        keyWordArr[0] = "品牌招商管理"; keyWordArr[1] = "连锁招商管理";
+                    }
+                       if (jobCatStr == "厨师/面点师")
+                    {
+                        keyWordArr[0] = "厨师"; keyWordArr[1] = "无";
+                    }
+                   if (jobCatStr == "食品/饮料研发")
+                    {
+                        keyWordArr[0] = "食品研发"; keyWordArr[1] = "饮料研发";
+                    }
+                   if (jobCatStr == "环境/健康/安全经理/主管")
+                   {
+                       keyWordArr[0] = "环境安全经理"; keyWordArr[1] = "环境安全主管"; keyWordArr[1] = "健康安全经理"; keyWordArr[1] = "健康安全主管";
+                   }
+                   if (jobCatStr == "化验/检验")
+                   {
+                       keyWordArr[0] = "化验员"; keyWordArr[1] = "检验员";
+                   }
+                   if (jobCatStr == "环境/健康/安全工程师")
+                   {
+                       keyWordArr[0] = "环境安全工程师"; keyWordArr[1] = "健康安全工程师"; keyWordArr[2] = "无";
+                   }
+                   if (jobCatStr == "首席执行官CEO/总裁/总经理")
+                   {
+                       keyWordArr[0] = "首席执行官CEO"; keyWordArr[1] = "总裁"; keyWordArr[2] = "总经理";
+                   }
+                   if (jobCatStr == "分公司/代表处负责人")
+                   {
+                       keyWordArr[0] = "分公司负责人"; keyWordArr[1] = "代表处负责人";
+                   }
+                   if (jobCatStr == "部门/事业部管理")
+                   {
+                       keyWordArr[0] = "部门管理"; keyWordArr[1] = "事业部管理";
+                   }
+                   if (jobCatStr == "ERP技术/开发应用")
+                   {
+                       keyWordArr[0] = "ERP技术应用"; keyWordArr[1] = "ERP开发应用";
+                   }
+                   if (jobCatStr == "语音/视频/图形开发")
+                   {
+                       keyWordArr[0] = "语音开发"; keyWordArr[1] = "视频开发"; keyWordArr[1] = "图形开发";
+                   }
+                   if (jobCatStr == "信息技术经理/主管")
+                   {
+                       keyWordArr[0] = "信息技术经理"; keyWordArr[1] = "信息技术主管";
+                   }
+                   if (jobCatStr == "IT技术支持/维护经理")
+                   {
+                       keyWordArr[0] = "IT技术支持经理"; keyWordArr[1] = "IT技术维护经理";
+                   }
+                   if (jobCatStr == "IT项目执行/协调人员")
+                   {
+                       keyWordArr[0] = "IT项目执行人员"; keyWordArr[1] = "IT项目协调人员";
+                   }
+                   if (jobCatStr == "无线/射频通信工程师")
+                   {
+                       keyWordArr[0] = "无线通信工程师"; keyWordArr[1] = "射频通信工程师";
+                   }
+                   if (jobCatStr == "旅游产品/线路策划")
+                   {
+                       keyWordArr[0] = "旅游产品策划"; keyWordArr[1] = "旅游线路策划";
+                   }
+                   if (jobCatStr == "质量管理/测试主管")
+                   {
+                       keyWordArr[0] = "质量管理主管"; keyWordArr[1] = "质量测试主管";
+                   }
+                   if (jobCatStr == "质量管理/测试经理")
+                   {
+                       keyWordArr[0] = "质量管理经理"; keyWordArr[1] = "质量测试经理";
+                   }
+                      if (jobCatStr == "IT技术/研发总监")
+                   {
+                       keyWordArr[0] = "研发总监"; keyWordArr[1] = "IT技术总监";
+                   }
+                   if (jobCatStr == "环境/健康/安全经理/主管")
+                   {
+                       keyWordArr[0] = "环境安全经理"; keyWordArr[1] = "环境安全主管";
+                       keyWordArr[2] = "健康安全经理"; keyWordArr[3] = "健康安全主管";
+                   }
+                     
+                   if (jobCatStr == "资产/资金管理")
+                   {
+                       keyWordArr[0] = "资产管理"; keyWordArr[1] = "无";
+                   }
+                     if (jobCatStr == "IT技术支持/维护工程师")
+                   {
+                       keyWordArr[0] = "IT技术支持工程师"; keyWordArr[1] = "IT技术维护工程师";
+                   }
+                     if (jobCatStr == "财务主管/总帐主管")
+                     {
+                         keyWordArr[0] = "财务主管"; keyWordArr[1] = "无";
+                     }
+                     
+                       if (jobCatStr == "Helpdesk")
+                   {
+                       keyWordArr[0] = "Helpdesk总台"; ;
+                   }
+                   if (jobCatStr == "商务经理/主管")
+                   {
+                       keyWordArr[0] = "电子商务经理"; keyWordArr[1] = "电子商务主管"; 
+                   }
+                   if (jobCatStr == "商务专员/助理")
+                   {
+                       keyWordArr[0] = "电子商务专员"; keyWordArr[1] = "电子商务助理";
+                   }
+                   if (jobCatStr == "语音/视频/图形开发")
+                   {
+                       keyWordArr[0] = "语音开发"; keyWordArr[1] = "视频开发"; keyWordArr[2] = "图形开发";
+                   }
+                  
+                   if (jobCatStr == "采购材料/设备管理")
+                   {
+                       keyWordArr[0] = "采购材料管理"; keyWordArr[1] = "采购设备管理";
+                   }
+                    
+
+
+                    var hitJobCatList = allCatList.Where(c => keyWordArr.Contains(c.Text("jobCategory"))).ToList();
+                    if (hitJobCatList.Count > 0)
+                    {
+                        hitJobCatObj = hitJobCatList.FirstOrDefault();
+                        var keyWordCount=keyWordArr.Where(c=>c!="无").Count();
+                        if (hitJobCatList.Count< keyWordCount)
+                        { 
+                            //尝试在同类里面查找
+                            var domain = hitJobCatObj.Text("domain");
+                            var hitOtherCatObjList = allCatList.Where(c => c.Text("jobCategory") != hitJobCatObj.Text("jobCategory") && c.Text("domain") == domain && keyWordArr.Any(d => c.Text("jobCategory").Contains(d))).ToList();
+                            hitJobCatList.AddRange(hitOtherCatObjList);
+                            hitJobCatList = hitJobCatList.Distinct().ToList();
+                            if (hitJobCatList.Count != keyWordCount)
+                            {
+                                sb.AppendFormat("{0}\n", jobCatStr);
+                                continue;
+                            }
+                        }
+                      
+                        if (hitJobCatList.Count() == 1)
+                        {
+                            
+                            DBChangeQueue.Instance.EnQueue(new StorageData() { Document = new BsonDocument().Add("catGuid", hitJobCatObj.Text("guid")), Name = tableName, Query = Query.And(Query.EQ("jobCategories", jobCatStr)), Type = StorageType.Update });
+                        }
+                        else
+                        {
+                            var bsonGuids = hitJobCatList.Select(c => new BsonDocument().Add("catGuid", c.Text("guid"))).ToList();
+                            DBChangeQueue.Instance.EnQueue(new StorageData() { Document = new BsonDocument().Add("catGuid", hitJobCatObj.Text("guid")).Add("mutipleCatGuids", bsonGuids.ToJson()), Name = tableName, Query = Query.And(Query.EQ("jobCategories", jobCatStr)), Type = StorageType.Update });
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendFormat("{0}\n", jobCatStr);
+                    }
+                }
+            }
+            this.richTextBox1.Text = sb.ToString();
+            StartDBChangeProcessQuick(_mongoDBOp);
+            ShowMessageInfo("succeed");
+        }
+
+        private void button55_Click(object sender, EventArgs e)
+        {
+            hi.Url = "http://www.ip.cn/";
+           
+         
+            //hi.UserAgent = "okhttp/3.2.0";
+            hi.HeaderSet("Content-Type", "application/x-www-form-urlencoded");
+            // hi.HeaderSet("Content-Length","154");
+            // hi.HeaderSet("Connection","Keep-Alive");
+            hi.HeaderSet("Accept-Encoding", "gzip");
+            //hi.EnableProxy = true;
+            //hi.ProxyIP = proxyHost;
+            //hi.ProxyPort = int.Parse(proxyPort);
+            //hi.ProxyUserName = proxyUser;
+            //hi.ProxyPwd = proxyPass;
+           
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_URL, proxyHost);
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_PORT, proxyPort);
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_PROXY, string.Format("{0}:{1}", proxyHost, proxyPort));
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_USERPWD, string.Format("{0}:{1}", proxyUser, proxyPass));
+            var ho = LibCurlNet.HttpManager.Instance.ProcessRequest(hi);
+            
+            if (ho.IsOK)
+            {
+                this.richTextBox1.Text = Toolslib.Str.Sub(ho.TxtData, "您现在的 IP", "所在地理位置");
+            }
+            
+            
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (hi != null)
+            {
+                hi.Dispose();
+            }
+        }
+
+        private void button56_Click(object sender, EventArgs e)
+        {
+            this.richTextBox2.Text = this.richTextBox1.Text.Replace(" ", "").Replace("\"", "").Trim();
+            return;
+            var url = "http://api.meituan.com/group/v1/poi/cates/showlist?cityId=57&utm_source=qqcpd&utm_medium=android&utm_term=254&version_name=5.5.4&utm_content=864394010401414&utm_campaign=AgroupBgroupC0E0Gmerchant&ci=57&uuid=D0CA57CF673B1DF3B9D10A36C085A74C7B924190117AF510F9B7717FD432FEE2&msid=8643940104014141484816456943&__skck=09474a920b2f4c8092f3aaed9cf3d218&__skts=1484816498195&__skua=6c2f598f00063de23b4f9a091ab28e75&__skno=a44a95c4-b6f0-4786-9ae7-c8148dc6173b&__skcy=G8p1ahRd5ESh0nFAWLXcEc3bZos%3D";
+            hi.Url = url;
+            hi.HeaderSet("Content-Type", "application/x-www-form-urlencoded");
+            // hi.HeaderSet("Content-Length","154");
+            // hi.HeaderSet("Connection","Keep-Alive");
+            hi.HeaderSet("Accept-Encoding", "gzip");
+            hi.HeaderSet("User-Agent", "AiMeiTuan /samsung-4.4.2-GT-I9300-1440x900-320-5.5.4-254-864394010401414-qqcpd");
+            hi.HeaderSet("__skcy", "G8p1ahRd5ESh0nFAWLXcEc3bZos=");
+            hi.HeaderSet("__skua", "6c2f598f00063de23b4f9a091ab28e75");
+            hi.HeaderSet("__skno", "a44a95c4-b6f0-4786-9ae7-c8148dc6173b");
+            hi.HeaderSet("__skck", "09474a920b2f4c8092f3aaed9cf3d218");
+            hi.HeaderSet("__skts", "1484816498195");
+            hi.HeaderSet("Host", "api.meituan.com");
+            //hi.EnableProxy = true;
+            //hi.ProxyIP = proxyHost;
+            //hi.ProxyPort = int.Parse(proxyPort);
+            //hi.ProxyUserName = proxyUser;
+            //hi.ProxyPwd = proxyPass;
+
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_URL, proxyHost);
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_PORT, proxyPort);
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_PROXY, string.Format("{0}:{1}", proxyHost, proxyPort));
+            //hi.CurlObject.SetOpt(LibCurlNet.CURLoption.CURLOPT_USERPWD, string.Format("{0}:{1}", proxyUser, proxyPass));
+            var ho = LibCurlNet.HttpManager.Instance.ProcessRequest(hi);
+
+            if (ho.IsOK)
+            {
+                this.richTextBox1.Text = ho.TxtData;
+            }
+        }
+
+        private void button57_Click(object sender, EventArgs e)
+        {
+            MongoConnectionStringBuilder builder = new MongoConnectionStringBuilder();
+            builder.Server = new MongoServerAddress("192.168.1.124", 37088);
+            builder.DatabaseName = "SimpleCrawler";
+            builder.Username = "MZsa";
+            builder.Password = "MZdba";
+            builder.SocketTimeout = new TimeSpan(00, 03, 59);
+            var _mongoDBOp = new MongoOperation(builder);
+            var allLandUrlList = _mongoDBOp.FindAll("WeiXinArticleUrl", Query.NE("isUpdate", "1")).ToList();//城市url
+            var typeName = "算法";
+            var html = this.richTextBox1.Text;
+            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+            htmlDoc.LoadHtml(html);
+            var firstDiv = htmlDoc.DocumentNode;
+            if (firstDiv == null) return;
+            var LinkList=new List<string>();
+            var hitANode = firstDiv.SelectNodes("//a[@class='cover_appmsg_link_box redirect']");
+            foreach (var hit in hitANode)
+            { 
+                var urlObj=hit.Attributes["hrefs"];
+                if(urlObj!=null){
+                    var url=urlObj.Value.Trim();
+                   if(!LinkList.Contains(url))
+                   {
+                    LinkList.Add(url);
+                   }
+               }
+            }
+            var hitADiv1 = firstDiv.SelectNodes("//a[@class='flex_context_item redirect']");
+            foreach (var hit in hitADiv1)
+            {
+                var urlObj = hit.Attributes["hrefs"];
+                if (urlObj != null)
+                {
+                    var url = urlObj.Value.Trim();
+                    if (!LinkList.Contains(url))
+                    {
+                        LinkList.Add(url);
+                    }
+                }
+            }
+            foreach (var link in LinkList)
+            {
+                this.richTextBox2.Text += link + "\n";
+                DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "WeiXinArticleUrl", Document = new BsonDocument().Add("url",link).Add("catName",typeName), Type = StorageType.Insert });
+            }
+           
+            StartDBChangeProcessQuick(_mongoDBOp);
+          
+        }
+        public MongoOperation GetMongoOp(string ip,string databaseName)
+        {
+
+            MongoConnectionStringBuilder builder = new MongoConnectionStringBuilder();
+            builder.Server = new MongoServerAddress(ip, 37088);
+            builder.DatabaseName =databaseName;
+            builder.Username = "MZsa";
+            builder.Password = "MZdba";
+            builder.SocketTimeout = new TimeSpan(00, 03, 59);
+            var _mongoDBOp = new MongoOperation(builder);
+            return _mongoDBOp;
+        }
+        public MongoOperation Get124MongoOp()
+        {
+           return GetMongoOp("192.168.1.124", "SimpleCrawler");
+        }
+        public MongoOperation Get124MongoOp(string dataBase)
+        {
+            return GetMongoOp("192.168.1.124", dataBase);
+        }
+        public MongoOperation Get230WPMMongoOp()
+        {
+            return GetMongoOp("192.168.1.230", "WorkPlanManage");
+        }
+        //主从MongoOp
+        public MongoOperation GetRsMongoOp()
+        {
+           
+            return new MongoOperation("mongodb://192.168.1.124:37089,192.168.1.134:37089/admin");
+        }
+
+      
+        private void button58_Click(object sender, EventArgs e)
+        {
+            var tag = "算法";
+            var tagLabelName = "数据结构与算法";
+            var _mongoDBOp = Get124MongoOp();
+            var allWeixinUrlList = _mongoDBOp.FindAll("WeiXinArticleUrl", Query.And(Query.EQ("isUpdate", "1"), Query.EQ("catName", tag))).ToList();//城市url
+            var _wpmMongoDBOp = Get230WPMMongoOp();
+            var hitArticleSource = _wpmMongoDBOp.FindAll("MindMapArticle", Query.EQ("source", "weixin")).SetFields("sourceId", "articleId").ToList();
+            var hitArticleSourceIds=hitArticleSource.Select(c => c.Text("sourceId")).ToList();
+            var hitArticleArticleIds = hitArticleSource.Select(c =>(BsonValue) c.Text("articleId")).ToList();
+
+            //DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "MindMapArticle", Query = Query.EQ("source", "weixin"), Type = StorageType.Delete });
+            //DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "MindMapArticleLabelRelation", Query = Query.In("articleId", hitArticleArticleIds), Type = StorageType.Delete });
+            //StartDBChangeProcessQuick(_wpmMongoDBOp);
+            //return;
+
+            var netQuery = Query.And(Query.NE("deleteStatus", "1"), Query.Or(Query.Matches("name", new Regex(tagLabelName, RegexOptions.IgnoreCase))));
+            var weixinQuery = Query.And(Query.NE("deleteStatus", "1"), Query.Or(Query.Matches("name", new Regex("微信公众号", RegexOptions.IgnoreCase))));
+            var netLabel = _wpmMongoDBOp.FindAll("MindMapLabelCollection", netQuery).FirstOrDefault();
+            var weixinLabel = _wpmMongoDBOp.FindOne("MindMapLabelCollection", weixinQuery);
+            if (netLabel == null || weixinLabel == null)
+            {
+                return;
+            }
+            var SDList = new List<StorageData>();
+            var curCount = _wpmMongoDBOp.FindOne("TablePKCounter", Query.EQ("tbName", "MindMapArticle")).Int("count");
+            var index = curCount + 1000;
+            var hasAdd = false;
+            foreach (var weinUrl in allWeixinUrlList)
+            {
+                var addBson = new BsonDocument();
+                addBson.Add("source", "weixin");
+                addBson.Add("sourceId", weinUrl.Text("_id"));
+                addBson.Add("content", weinUrl.Text("content").Replace("data-src=\"","src=\""));
+                addBson.Add("name", weinUrl.Text("name"));
+                addBson.Add("createDate", weinUrl.Text("date"));
+                addBson.Add("createUserId", "1");
+                addBson.Add("updateDate", weinUrl.Text("date"));
+                addBson.Add("updateUserId", "1");
+                addBson.Add("url", weinUrl.Text("url"));
+                addBson.Add("underTable", "MindMapArticle");
+                addBson.Add("order", index.ToString());
+                addBson.Add("articleId", index.ToString());
+                //
+                if (hitArticleSourceIds.Contains(weinUrl.Text("_id")))
+                {
+                    DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "MindMapArticle", Document = addBson, Query = Query.EQ("sourceId", weinUrl.Text("_id")), Type = StorageType.Update });
+                }
+                else
+                {
+                    DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "MindMapArticle", Document = addBson, Type = StorageType.Insert });
+                    var netRelationDoc = new BsonDocument().Add("articleId", addBson.Text("articleId"));
+                    if (netLabel != null)
+                    {
+                        netRelationDoc.Add("labelId", netLabel.Text("labelId"));
+                    }
+                    var weixinRelationDoc = new BsonDocument().Add("articleId", addBson.Text("articleId"));
+                    if (weixinLabel != null)
+                    {
+                        weixinRelationDoc.Add("labelId", weixinLabel.Text("labelId"));
+                    }
+                    DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "MindMapArticleLabelRelation", Document = netRelationDoc, Type = StorageType.Insert });
+                    DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "MindMapArticleLabelRelation", Document = weixinRelationDoc, Type = StorageType.Insert });
+                    //增加关联.net 与微信公众号
+                    //增加关联.net 与微信公众号
+                    index++;
+                    hasAdd = true;
+                }
+               
+                //SDList.Add(new StorageData() { Name = "MindMapArticle", Document = addBson,Query=Query.EQ("sourceId",weinUrl.Text("_id")), Type = StorageType.Update });
+            } 
+            //if (SDList.Count() > 0)
+            //{
+            //    var wpm = new DataOperation(_wpmMongoDBOp);
+            //    var result=wpm.BatchSaveStorageData(SDList);
+            //}
+            ///更新PKCounter
+            if (hasAdd)
+            {
+                DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "TablePKCounter", Document = new BsonDocument().Add("count", (index + 1).ToString()), Query = Query.EQ("tbName", "MindMapArticle"), Type = StorageType.Update });
+            }
+             StartDBChangeProcessQuick(_wpmMongoDBOp);
+          }
+
+        private void button59_Click(object sender, EventArgs e)
+        {
+            var _mongoDBOp = Get124MongoOp();
+            var cityName = "南京";
+            var allEnterpriseList = _mongoDBOp.FindAll("ProfileCompany_BaiCheng",Query.EQ("cityName",cityName)).SetFields("entName", "联系电话").ToList();
+            var sb = new StringBuilder();
+            var index = 1;
+            foreach (var ent in allEnterpriseList)
+            {
+                if (string.IsNullOrEmpty(ent.Text("联系电话"))) continue;
+                if (ent.Text("联系电话")=="已被企业屏蔽") continue;
+                sb.AppendFormat("update EnterpriseLibrary set fromRcTel='{0}' where cityName='{1}' and name='{2}'\n", ent.Text("联系电话"),cityName, ent.Text("entName"));
+                if (index++ % 1000 == 0)
+                {
+                    sb.AppendFormat("\n\r");
+                }
+            }
+            this.richTextBox2.Text = sb.ToString();
+        }
+
+        private void button60_Click(object sender, EventArgs e)
+        {
+            var url = this.richTextBox1.Text;
+            var authorizationCode = GetHuiCongAuthorCode(url);
+           
+            hi.Url = url;
+            hi.Refer="z.hc360.com";
+            hi.HeaderSet("Authorization", authorizationCode);
+            hi.HeaderSet("If-Modified-Since", "0");
+            hi.HeaderSet("User-Agent", "56");
+            hi.HeaderSet("Host", "z.hc360.com");
+            hi.HeaderSet("Content-Type", "text/html;charset=gb2312");
+            var ho = LibCurlNet.HttpManager.Instance.ProcessRequest(hi);
+            if (ho.IsOK)
+            {
+                    this.richTextBox2.Text = ho.TxtData;
+            }
+
+            
+        }
+
+        private void button61_Click(object sender, EventArgs e)
+        {
+            var cityHouseConStr = "Data Source=192.168.1.114;Initial Catalog=MZCityLibrary;User ID=sa;Password=qwer@1234";
+            var cityHouseHelper = new SqlServerHelper(cityHouseConStr);
+            var sqlTxt=string.Format("select name  from MZ_land where cityName='{0}' and x is null",textBox1.Text);
+            var dataTableList=cityHouseHelper.ExecuteDataTable(sqlTxt);
+            var positionList = new List<string>();
+            var hitUrl = "http://gc.ditu.aliyun.com/geocoding?a=";
+            this.richTextBox2.Clear();
+            foreach (DataRow dr in dataTableList.Rows)
+            {
+              
+               var cityName=textBox1.Text;
+               var searchTxt = string.Empty;
+               if (dr[0].ToString().Contains(cityName))
+               {
+                   searchTxt = dr[0].ToString();
+               }
+               else
+               {
+                   searchTxt = string.Format("{0} {1}", cityName, dr[0].ToString());
+               }
+               if (positionList.Contains(searchTxt))
+               {
+                   continue;
+               }
+                 positionList.Add(searchTxt);
+               UrlQueue.Instance.EnQueue(new UrlInfo(hitUrl + searchTxt) { Authorization = dr[0].ToString() });
+               
+            }
+            GetUrlQueueTimer.Interval = 1000;
+            GetUrlQueueTimer.Enabled = true;
+            GetUrlQueueTimer.Start();
+
+        }
+
+        private void GetUrlQueueTimer_Tick(object sender, EventArgs e)
+        {
+            if (UrlQueue.Instance.Count > 0)
+            {
+
+                var curUrlObj = UrlQueue.Instance.DeQueue();
+                if (curUrlObj != null && !string.IsNullOrEmpty(curUrlObj.UrlString))
+                {
+
+
+                    try
+                    {
+
+                        var result = GetHttpHtml(curUrlObj);
+                        //{"lon":112.80321,"level":5,"address":"","cityName":"","alevel":3,"lat":22.87999}
+                        if (result.StatusCode == HttpStatusCode.OK)
+                        {
+                            var cityName = this.textBox1.Text;
+                            var jsonStr = result.Html;
+                            var x = Toolslib.Str.Sub(jsonStr, "lon\":", ",");
+                            var y = Toolslib.Str.Sub(jsonStr, "lat\":", "}");
+                            var name = curUrlObj.Authorization;
+                            var strFormat = string.Format("update MZ_Land set x='{0}',y='{1}',createDate='2019-01-01' where cityName='{2}'and name='{3}' and x is null ", x, y, cityName, name);
+
+                            ShowMessageInfo2(strFormat + "\n", true);
+                            ShowMessageInfo("剩余url:" + UrlQueue.Instance.Count.ToString(), false);
+                        }
+                        else
+                        {
+                            ShowMessageInfo(result.Html);
+                            if (curUrlObj.Depth <= 3)
+                            {
+                                curUrlObj.Depth = curUrlObj.Depth + 1;
+                                UrlQueue.Instance.EnQueue(curUrlObj);
+                                //return;
+                            }
+                        }
+
+                    }
+                    catch (Exception ex)//异重试常超时
+                    {
+                        if (curUrlObj.Depth <= 3)
+                        {
+                            curUrlObj.Depth = curUrlObj.Depth + 1;
+                            UrlQueue.Instance.EnQueue(curUrlObj);
+                            //return;
+                        }
+                    }
+
+
+                }
+
+            }
+            else
+            {
+                GetUrlQueueTimer.Stop();
+            }
+        }
+
+         
+
+        private void button62_Click(object sender, EventArgs e)
+        {
+            
+              var url = "http://wenshuapp.court.gov.cn/MobileServices/GetLawListData";
+             //var url = "http://wenshuapp.court.gov.cn/MobileServices/GetAllFileInfoByIDNew";
+            //url="http://wenshuapp.court.gov.cn/MobileServices/GetAddCountAndTotalAndPVCount"
+             var result=GetWenShuUrlResult(url,this.richTextBox1.Text.Trim());
+             this.richTextBox2.Text = result;
+        }
+
+        /// <summary>
+        /// 裁判文书
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="requestBody"></param>
+        /// <returns></returns>
+        public string GetWenShuUrlResult(string url ,string requestBody)
+        {
+                    DotNet.Utilities.HttpHelper http = new DotNet.Utilities.HttpHelper();
+                    //创建Httphelper参数对象
+                    DotNet.Utilities.HttpItem item = new DotNet.Utilities.HttpItem()
+                    {
+
+                        URL = url,
+                        Method = "post",//URL     可选项 默认为Get   
+                        ContentType = "application/json",//返回类型    可选项有默认值 
+                        Timeout = 12000,
+                        UserAgent = "Dalvik/1.6.0 (Linux; U; Android 4.4.2; GT-I9300 Build/KOT49H)",
+                        Referer = "wenshuapp.court.gov.cn",
+                    };
+                    item.Postdata = requestBody;
+                    item.PostEncoding = Encoding.UTF8;
+                    //item.Header.Set("Content-Length", requestBody.Length.ToString());
+ 
+                    //请求的返回值对象
+                    DotNet.Utilities.HttpResult result = http.GetHtml(item);
+                    if (result.StatusCode == HttpStatusCode.OK)
+                    {
+                        return GetWenShuDecode(result.Html.Replace("JSON=", "").Replace("\"",""));
+                    }
+                    return result.Html;
+        }
+
+        /// <summary>
+        /// 返回解密信息
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public string  GetWenShuDecode(string str)
+        {
+            if (!string.IsNullOrEmpty(str))
+            {
+                var key = "lawyeecourtwensh";
+                var vi = "lawyeecourtwensh";
+                var result = AESDecode(str, key, vi);
+                return result;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        private void button63_Click(object sender, EventArgs e)
+        {
+            var curDate = DateTime.Now.ToString("yyyyMMddHHmm");
+            var md5Str = curDate + "lawyeecourtwenshuapp";
+            var str = getMd5Hash(md5Str);
+            this.richTextBox2.Text = str;
+        }
+
+        private void button64_Click(object sender, EventArgs e)
+        {
+            var url = this.richTextBox1.Text;
+            var requestBody = this.richTextBox2.Text;
+            DotNet.Utilities.HttpHelper http = new DotNet.Utilities.HttpHelper();
+            //创建Httphelper参数对象
+            DotNet.Utilities.HttpItem item = new DotNet.Utilities.HttpItem()
+            {
+
+                URL = url,
+                Method = "post",//URL     可选项 默认为Get   
+                ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值 
+                Timeout = 12000,
+                UserAgent = "haodf_app/1.0",
+                Referer = "wenshuapp.court.gov.cn",
+            };
+            item.Postdata = requestBody;
+            item.PostEncoding = Encoding.UTF8;
+            //item.Header.Set("Content-Length", requestBody.Length.ToString());
+
+            //请求的返回值对象
+            DotNet.Utilities.HttpResult result = http.GetHtml(item);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                this.richTextBox2.Text =stringCodeFix( result.Html);
+            }
+           
+        }
+        List<BsonDocument> NodeDocList = new List<BsonDocument>();
+        private void button65_Click(object sender, EventArgs e)
+        {
+            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+            htmlDoc.LoadHtml(this.richTextBox1.Text);
+            var root = htmlDoc.GetElementbyId("selectTree2_tree");
+            DealULNode(root,"",1);
+            if (NodeDocList.Count() > 0)
+            {
+                foreach (var doc in NodeDocList)
+                    DBChangeQueue.Instance.EnQueue(new StorageData() { Document = doc, Type = StorageType.Insert, Name = "WenShuReason" });
+            }
+            StartDBChangeProcessQuick(Get124MongoOp());
+        }
+        /// <summary>
+        /// 处理子节点
+        /// </summary>
+        /// <param name="node"></param>
+        private void DealULNode(HtmlAgilityPack.HtmlNode  node,string parentGuid,int level)
+        {
+            var childElemList = node.ChildNodes.Where(c=>c.Name=="li");
+
+            foreach (var lichild in childElemList)
+            {
+                var liId = lichild.Attributes["id"].Value.ToString().Replace("selectTree2_tree_","");
+                if (liId == "selectTree2_tree_1") { continue; }
+                var spanId=string.Format("selectTree2_tree_{0}",liId);
+                var spanName = lichild.ChildNodes.Where(c => c.Name.ToLower() == "a").FirstOrDefault();
+                if (spanName == null)
+                {
+                    continue;
+                }
+                
+                var childUL = lichild.ChildNodes.Where(c => c.Name.ToLower() == "ul").FirstOrDefault();
+                var addBons = new BsonDocument().Add("guid", liId).Add("name", spanName.InnerText).Add("pid", parentGuid).Add("level", level.ToString());
+                if (childUL == null)
+                {
+                    addBons.Add("isLeaf", "1");
+                }
+                NodeDocList.Add(addBons);
+                if (childUL != null)
+                {
+                   
+                    DealULNode(childUL, liId,  level+1);
+                }
+
+            }
+        }
+
+        private void button66_Click(object sender, EventArgs e)
+        {
+            this.richTextBox2.Text=GetDoctorResult();
+        }
+        public string GetDoctorResult()
+        { 
+            var url = this.richTextBox1.Text;
+            var requestBody = this.richTextBox2.Text;
+            DotNet.Utilities.HttpHelper http = new DotNet.Utilities.HttpHelper();
+                    //创建Httphelper参数对象
+                    DotNet.Utilities.HttpItem item = new DotNet.Utilities.HttpItem()
+                    {
+
+                        URL = url,
+                        Method = "post",//URL     可选项 默认为Get   
+                        ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值 
+                        Timeout = 12000,
+                        UserAgent = "haodf_app/1.0",
+                        Referer = "wenshuapp.court.gov.cn",
+                    };
+                    item.Postdata = requestBody;
+                    item.PostEncoding = Encoding.UTF8;
+                    //item.Header.Set("Content-Length", requestBody.Length.ToString());
+ 
+                    //请求的返回值对象
+                    DotNet.Utilities.HttpResult result = http.GetHtml(item);
+                    if (result.StatusCode == HttpStatusCode.OK)
+                    {
+                        return stringCodeFix(result.Html);
+                    }
+                    return result.Html;
+        }
+
+        private void button67_Click(object sender, EventArgs e)
+        {
+            var cateNameArray = this.richTextBox1.Text.Split(new string[] { "\n", "," }, StringSplitOptions.RemoveEmptyEntries);
+            var sb=new StringBuilder();
+            foreach (var cateName in cateNameArray)
+            {
+                sb.AppendLine(string.Format("【{0}】:\t{1}",cateName,GetMaterialParam(cateName)));
+                sb.AppendLine("\n\r\n\r");
+            }
+            this.richTextBox2.Text = sb.ToString();
+        }
+
+        private string GetMaterialParam(string catName)
+        {
+            var dataop = Get124MongoOp();
+            var hitCatMaterialIds = dataop.FindAll("Material_HuiCong", Query.Matches("catName", catName)).Select(c => (BsonValue)c.Text("guid")).ToList();
+            var hitMaterDetailObj = dataop.FindAll("MaterialDetail_HuiCong", Query.In("searchResultfoId", hitCatMaterialIds)).SetFields("produceData").ToList();
+            var paramDic=new Dictionary<string,int>();
+            foreach (var produceData in hitMaterDetailObj)
+            {
+                var pDParamArray = produceData["produceData"].AsBsonArray;
+                foreach(BsonDocument pdParam in pDParamArray)
+                {
+                    var name=pdParam.Text("name").Trim();
+                    if (string.IsNullOrEmpty(name)||name.Length>=20) { continue; }
+                    if (!paramDic.ContainsKey(name))
+                    {
+                        paramDic.Add(name,1);
+                    }
+                    else
+                    {
+                        paramDic[name]++;
+                    }
+                }
+            }
+            var sb = new StringBuilder();
+            foreach (var dic in paramDic.OrderByDescending(c => c.Value))
+            {
+                sb.AppendFormat("{0}({1})", dic.Key,dic.Value);
+            }
+            return sb.ToString();
+        }
+
+        private void button68_Click(object sender, EventArgs e)
+        {
+            var __dataop = GetRsMongoOp();
+            var allTable = __dataop.FindAll("TestTable1").ToList();
+        }
+
+        List<BsonDocument> allBaseCat = new List<BsonDocument>();
+        List<BsonDocument> allBrand = new List<BsonDocument>();
+        List<BsonDocument> hitCatMaterialList = new List<BsonDocument>();
+        int MaxMatCount = 0;
+        List<string> needCreateBaseStr = new List<string>();
+        private void DeleteBrand()
+        {
+            var dataop = Get124MongoOp();
+            var dataopEx = new DataOperation(dataop);
+            var _MatDataop = new DataOperation(Get124MongoOp("PublicMat"));
+            var hitFirstList = _MatDataop.FindAllByQuery("Material_Brand", Query.EQ("src", "HC")).Where(c => c.Text("name") == "其他").ToList();//材料类目
+
+            foreach (var brandObj in hitFirstList)
+            {
+                var brandId = brandObj.Text("brandId");
+                DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "Material_Material", Document = new BsonDocument().Add("brandId", ""), Query = Query.EQ("brandId", brandId), Type = StorageType.Update });
+                DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "Material_Brand", Query = Query.EQ("brandId", brandId), Type = StorageType.Delete });
+            }
+
+            StartDBChangeProcessQuick(Get124MongoOp("PublicMat"));
+            MessageBox.Show("succeed");
+        }
+        private void button69_Click(object sender, EventArgs e)
+        {
+           var dataop = Get124MongoOp();
+           var dataopEx = new DataOperation(dataop);
+           var _MatDataop = new DataOperation(Get124MongoOp("PublicMat"));
+         
+          
+           //var allMaterial = _MatDataop.FindFieldsByQuery("Material_Material", Query.EQ("src","HC"), new string[] { "searchResultfoId" }).ToList();
+           //foreach (var mat in allMaterial)
+           //{
+            
+           //    DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "Material_Material", Document = new BsonDocument().Add("matId", MaxMatCount.ToString()), Query = Query.EQ("_id", ObjectId.Parse(mat.Text("_id"))), Type = StorageType.Update });
+               
+           //}
+           //DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "TablePKCounter", Document = new BsonDocument().Add("count", MaxMatCount), Query = Query.EQ("tbName", "Material_Material"), Type = StorageType.Update });
+           //StartDBChangeProcessQuick(Get124MongoOp("PublicMat"));
+           //return;
+            allBaseCat = _MatDataop.FindAll("Material_BaseCat").SetFields("baseCatId", "name").ToList();//基类
+            allBrand = _MatDataop.FindAll("Material_Brand").SetFields("brandId", "name").ToList();//品牌
+            ThreadPool.QueueUserWorkItem(ImportMaterial, 5);
+            
+        }
+
+
+        private void ImportMaterial(object i)
+        {
+            Dictionary<string,string> baseCatNameMapDic = new Dictionary<string,string>();
+
+            baseCatNameMapDic.Add("全钢结构雨棚", "钢质雨篷");
+            baseCatNameMapDic.Add("LED水底灯", "灯光照明");
+            baseCatNameMapDic.Add("LED埋地灯", "灯光照明");
+            baseCatNameMapDic.Add("景观灯", "灯光照明");
+            baseCatNameMapDic.Add("草坪灯", "灯光照明");
+            baseCatNameMapDic.Add("景观庭院灯", "灯光照明");
+            baseCatNameMapDic.Add("景观壁灯", "灯光照明");
+            baseCatNameMapDic.Add("埋地灯", "灯光照明");
+            baseCatNameMapDic.Add("景观树灯", "灯光照明");
+            baseCatNameMapDic.Add("地脚灯", "灯光照明");
+            
+            baseCatNameMapDic.Add("可视对讲", "楼宇可视对讲系统");
+            baseCatNameMapDic.Add("小区雕塑", "艺术品");
+            baseCatNameMapDic.Add("铝包木复合门窗", "铝合金门窗");
+            baseCatNameMapDic.Add("铝合金雨棚", "铝合金雨篷");
+            baseCatNameMapDic.Add("耐力板组装式雨棚", "耐力板组装式雨篷");
+            baseCatNameMapDic.Add("PC板材(阳光板,耐力板)雨棚", "PC板材(阳光板,耐力板)雨篷");
+            baseCatNameMapDic.Add("小区栋号牌", "楼栋牌");
+            baseCatNameMapDic.Add("景观成品桌椅", "成品桌椅/遮阳伞");
+            baseCatNameMapDic.Add("小区户外垃圾桶", "垃圾桶");
+            baseCatNameMapDic.Add("小区健身器材", "园林健身器材");
+            var dataop = Get124MongoOp();
+            var dataopEx = new DataOperation(dataop);
+            var _MatDataop = new DataOperation(Get124MongoOp("PublicMat"));
+            allBaseCat = _MatDataop.FindAll("Material_BaseCat").SetFields("baseCatId", "name").ToList();//基类
+            allBrand = _MatDataop.FindAll("Material_Brand").SetFields("brandId", "name").ToList();//品牌
+
+            //searchResultfoId
+            var maxMatCountObj = _MatDataop.FindOneByQuery("TablePKCounter", Query.EQ("tbName", "Material_Material"));
+            if (maxMatCountObj == null)
+            {
+                return;
+            }
+            MaxMatCount = maxMatCountObj.Int("count") + 100;
+            var takeCount = 100;
+            var random = new Random();
+            var allCount = dataopEx.FindCount("MaterialDetail_HuiCong", Query.And(Query.NE("isImport", "1"), Query.NE("isDeal", "1"))) ;
+            var skipCount = 100;
+            if (allCount >= 1000)
+            {
+                skipCount = random.Next(1000, allCount);
+            }
+            else
+            {
+                skipCount = 0;
+            }
+            var allAdd = 0;
+            // var hitMaterDetailObjList = dataop.FindAll("MaterialDetail_HuiCong", Query.And(Query.NE("isImport", "1"), Query.NE("isDeal", "1"))).SetLimit(takeCount).Skip(skipCount).ToList();
+            var hitMaterDetailObjList = dataopEx.FindLimitByQuery("MaterialDetail_HuiCong", Query.And(Query.NE("isImport", "1"), Query.NE("isDeal", "1")), new SortByDocument() { }, skipCount, takeCount).ToList();
+            while (hitMaterDetailObjList.Count() > 0)
+            {
+                hitCatMaterialList = dataop.FindAll("Material_HuiCong", Query.In("guid", hitMaterDetailObjList.Select(c => (BsonValue)c.Text("searchResultfoId")))).SetFields("guid", "catName", "searchResultfoImageSmall").ToList();//材料类目
+            
+                var updateStorageList = new List<StorageData>();
+                var updateMaterialDetialStorageList = new List<StorageData>();
+                var dateTimeNow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                foreach (var detailMaterial in hitMaterDetailObjList)
+                {
+
+                    var hitCatObj = hitCatMaterialList.Where(c => c.Text("guid") == detailMaterial.Text("searchResultfoId")).FirstOrDefault();
+                    if (hitCatObj == null) continue;
+                    var catNames = hitCatObj.Text("catName");
+                    var catNameList = catNames.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    var hitBaseCatObj = allBaseCat.Where(c => catNameList.Any(d => d == c.Text("name") || d.Contains(c.Text("name")))).FirstOrDefault();
+                    if (catNames == "PC板材(阳光板、耐力板)雨棚")
+                    {
+                        hitBaseCatObj = allBaseCat.Where(c => c.Text("baseCatId") == "2346").FirstOrDefault();
+                    }
+                   
+                    if (hitBaseCatObj != null)//获取匹配的基类Id
+                    {
+                        detailMaterial.Set("baseCatId", hitBaseCatObj.Text("baseCatId"));
+                    }
+                    else
+                    {
+                       var hitCatName = catNameList.Where(c => baseCatNameMapDic.ContainsKey(c.Trim())).FirstOrDefault();
+                       if (hitCatName!=null)
+                       {
+                           var hitMapObj = baseCatNameMapDic[hitCatName];
+                           hitBaseCatObj = allBaseCat.Where(c => hitMapObj == c.Text("name")).FirstOrDefault();
+                           if (hitBaseCatObj != null)//获取匹配的基类Id
+                           {
+                               detailMaterial.Set("baseCatId", hitBaseCatObj.Text("baseCatId"));
+                           }
+                       }
+                       else
+                       {
+                           
+                           if (!needCreateBaseStr.Contains(catNames))
+                           {
+                               //建立基类
+                               needCreateBaseStr.Add(catNames);
+                               var str = FilterStr(string.Join(",", needCreateBaseStr));
+                               ShowMessageInfo(str, false);
+                           }
+                           continue;
+                       }
+                    }
+                    if (detailMaterial.ContainsColumn("product"))
+                    {
+                        var matProduct = detailMaterial["product"] as BsonDocument;
+                        var matName = matProduct.Text("title");
+                        var matProductDataArray = detailMaterial["produceData"] as BsonArray;
+                        var matBrandObj = matProductDataArray.Where(c => (c as BsonDocument).Text("name") == "品牌").FirstOrDefault();
+                        var matBrandName = (matBrandObj as BsonDocument).Text("value");
+                        var hitBrandObj = allBrand.Where(c => c.Text("name") == matBrandName.Trim()).FirstOrDefault();
+                        if (hitBrandObj != null)
+                        {
+                            detailMaterial.Set("brandId", hitBrandObj.Text("brandId"));//品牌关联
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(matBrandName))
+                            {
+                                //新增品牌
+                                var brandDoc = new BsonDocument();
+                                brandDoc.Add("name", matBrandName);
+                                var pinyin = PinyinHelper.GetShortPinyin(matBrandName).ToLower();
+                                if (!String.IsNullOrEmpty(pinyin))
+                                {
+                                    brandDoc.Add("firstWord", pinyin[0].ToString().ToUpper());
+                                }
+                                brandDoc.Set("createUserId", "1");
+                                brandDoc.Set("updateUserId", "1");
+                                brandDoc.Set("updateDate", dateTimeNow);
+                                brandDoc.Set("createDate", dateTimeNow);
+                                brandDoc.Set("src", "HC");
+                                var result = _MatDataop.Insert("Material_Brand", brandDoc);
+                                if (result.Status == Status.Successful)
+                                {
+                                    hitBrandObj = result.BsonInfo;
+                                    allBrand.Add(hitBrandObj);
+                                    detailMaterial.Set("brandId", hitBrandObj.Text("brandId"));//品牌关联
+                                }
+                            }
+                            else
+                            {
+                             
+                                continue;
+                            }
+                        }
+                        var companyName = detailMaterial.Text("name");
+                        if (matName.Contains("比较好"))
+                        {
+                            matName = hitBaseCatObj.Text("name");
+                        }
+
+                        detailMaterial.Set("imgPath", hitCatObj.Text("searchResultfoImageSmall"));//缩略图地址
+                        detailMaterial.Set("name", matName);
+                        detailMaterial.Set("companyName", companyName);
+                        detailMaterial.Set("src", "HC");
+                        detailMaterial.Set("matType", "1");//初级材料，isStand
+                        detailMaterial.Set("isStand", "1");//是否标准库
+                        detailMaterial.Set("matId", (++MaxMatCount).ToString());//是否标准库
+                        detailMaterial.Set("underTable", "Material_Material");
+                        detailMaterial.Set("createUserId", "1");
+                        detailMaterial.Set("updateUserId", "1");
+                        detailMaterial.Set("updateDate", dateTimeNow);
+                        detailMaterial.Set("createDate", dateTimeNow);
+
+                        allAdd++;
+                        if (allAdd % 100 == 0)
+                        {
+                            ShowMessageInfo2(allAdd.ToString(), false);
+                        }
+                        updateStorageList.Add(new StorageData() { Document = detailMaterial, Name = "Material_Material", Type = StorageType.Insert });
+                        updateMaterialDetialStorageList.Add(new StorageData() { Document = new BsonDocument().Add("isImport", "1").Add("isDeal", "1"), Name = "MaterialDetail_HuiCong", Query = Query.EQ("searchResultfoId", detailMaterial.Text("searchResultfoId")), Type = StorageType.Update });
+                    }
+                    else
+                    {
+                        updateMaterialDetialStorageList.Add(new StorageData() { Document = new BsonDocument().Add("isDeal", "1"), Name = "MaterialDetail_HuiCong", Query = Query.EQ("searchResultfoId", detailMaterial.Text("searchResultfoId")), Type = StorageType.Update });
+                    }
+                   
+
+                }
+                //ShowMessageInfo2("开始保存数据");
+                //更新
+                foreach (var sd in updateStorageList)
+                {
+                    DBChangeQueue.Instance.EnQueue(sd);
+                }
+                StartDBChangeProcessQuick(Get124MongoOp("PublicMat"));
+
+                if (DBChangeQueue.Instance.Count <= 0)
+                {
+                    //更新
+                    foreach (var materDetailUpdate in updateMaterialDetialStorageList)
+                    {
+                        DBChangeQueue.Instance.EnQueue(materDetailUpdate);
+                    }
+                    StartDBChangeProcessQuick(dataop);
+
+
+                }
+                allCount = allCount-takeCount;
+                if (allCount <= 0)
+                {
+                    allCount = dataopEx.FindCount("MaterialDetail_HuiCong", Query.And(Query.NE("isImport", "1"), Query.NE("isDeal", "1")));
+                }
+                if (allCount >= 1000)
+                {
+                    skipCount = random.Next(1000, allCount);
+                }
+                else
+                {
+                    skipCount = 0;
+                }
+                //ShowMessageInfo2("下一轮循环");
+                hitMaterDetailObjList = dataopEx.FindLimitByQuery("MaterialDetail_HuiCong", Query.And( Query.NE("isDeal", "1")), new SortByDocument() { }, skipCount, takeCount).ToList();
+                //下一轮
+            }
+            DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "TablePKCounter", Document = new BsonDocument().Add("count", MaxMatCount), Query = Query.EQ("tbName", "Material_Material"), Type = StorageType.Update });
+            StartDBChangeProcessQuick(Get124MongoOp("PublicMat"));
+            ShowMessageInfo2("结束", true);
+        }
+
+        private void button70_Click(object sender, EventArgs e)
+        {
+            var dataop = Get124MongoOp();
+            BloomFilter<string> noDeleteFilter = new BloomFilter<string>(3000000);
+            var deleteList = new List<string>();
+            var deleteGuidList = new List<string>();
+            var allCityAreaInfo = dataop.FindAll("CityInfo_School").ToList();
+            foreach (var hitEnterprise in allCityAreaInfo)
+            {
+                var guid = "name";
+                if (!noDeleteFilter.Contains(hitEnterprise.Text(guid)))
+                {
+                    noDeleteFilter.Add(hitEnterprise.Text(guid));
+                }
+                else//已包含
+                {
+                    //if (keyList.Contains(hitEnterprise.Text("guid")))
+                    {
+                        deleteList.Add(hitEnterprise.Text("_id"));
+                        deleteGuidList.Add(hitEnterprise.Text(guid));
+                    }
+                }
+            }
+            if (deleteList.Count() <= 5000)
+            {
+                foreach (var deleteId in deleteList)
+                {
+                    dataop.Delete("CityInfo_School", Query.EQ("_id", ObjectId.Parse(deleteId)));
+                    // DBChangeQueue.Instance.EnQueue(new StorageData() { Name = "QCCEnterpriseKey", Query = Query.EQ("_id", ObjectId.Parse(deleteId)), Type = StorageType.Delete });
+                }
+                ShowMessageInfo(string.Format("{0}处理结束，总共{1}个 删除{2}\n\r", "", allCityAreaInfo.Count(), deleteList.Count()), true);
+            }
+            else
+            {
+                ShowMessageInfo(string.Format("{0}删除失败超出1000，总共{0}个需要删除{2}\n\r", "", allCityAreaInfo.Count(), deleteList.Count()), true);
+            }
+        }
+
+        private void button71_Click(object sender, EventArgs e)
+        {
+            var urlStr = "http://www.todgo.com/dalian/wafangdian1/IT/g1_/g2_/g3_/g4_/g5_/g6_/g7_/g8_/g9_/g10_/g11_/g12_/g13_/g14_/g15_/g16_/g17_/g18_/g19_/g20_/g21_/g22_/g23_/";
+            if (urlStr.Contains("g2_"))
+            {
+                var beginUrl=Toolslib.Str.Sub(urlStr,"","/g1");
+                 var strArr=urlStr.Split(new string[]{"_/"},StringSplitOptions.RemoveEmptyEntries);
+                 if (strArr.Length > 1)
+                 {
+                     var lastAvaiableValue = strArr[strArr.Length - 1];
+                     var newUrl = string.Format("{0}/{1}_/", beginUrl, lastAvaiableValue);
+                     this.richTextBox1.Text = newUrl;
+                 }
+            }
+        }
     }
 }

@@ -56,6 +56,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\library\MyXls.SL2.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\library\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SimpleCrawler">
       <HintPath>..\..\..\SimpleCrawler-master\SimpleCrawler-master\src\bin\Debug\SimpleCrawler.dll</HintPath>
     </Reference>
@@ -101,6 +105,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServerHelper.cs" />
     <Compile Include="LeetCodeHelper.cs" />
+    <Compile Include="Base64.cs" />
+    <Compile Include="StringCompare.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -126,10 +132,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\115Box\A3\MengZheng.BusinessControler\MengZheng.BusinessControler.csproj">
-      <Project>{837F8C1B-49F9-44C6-92E2-33049DB8BDED}</Project>
-      <Name>MengZheng.BusinessControler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\115Box\A3\Yinhe.ProcessingCenter\Yinhe.ProcessingCenter.csproj">
       <Project>{09B5BB08-C041-466F-8AAA-0E4C49747B6B}</Project>
       <Name>Yinhe.ProcessingCenter</Name>

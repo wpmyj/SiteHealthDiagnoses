@@ -42,10 +42,10 @@ E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检�
 E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Debug\AutoSystemHealtyDiagnosesConsole.csprojResolveAssemblyReference.cache
 E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Debug\AutoSystemHealtyDiagnoses.exe
 E:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Debug\AutoSystemHealtyDiagnoses.pdb
-F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Debug\AutoSystemHealtyDiagnosesConsole.csprojResolveAssemblyReference.cache
 F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\nlog.dll.nlog
 F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\AutoSystemHealtyDiagnoses.exe.config
 F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\AutoSystemHealtyDiagnoses.exe
 F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\发布包\站点检测运营工具\AutoSystemHealtyDiagnoses.pdb
+F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Debug\AutoSystemHealtyDiagnosesConsole.csprojResolveAssemblyReference.cache
 F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Debug\AutoSystemHealtyDiagnoses.exe
 F:\MN测试Project\SiteHealthDiagnoses\SiteHealthDiagnoses\AutoSystemHealtyDiagnoses\obj\x86\Debug\AutoSystemHealtyDiagnoses.pdb

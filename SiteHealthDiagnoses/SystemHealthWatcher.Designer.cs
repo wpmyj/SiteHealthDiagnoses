@@ -80,7 +80,8 @@
             this.conStr.Name = "conStr";
             this.conStr.Size = new System.Drawing.Size(399, 21);
             this.conStr.TabIndex = 3;
-            this.conStr.Text = "mongodb://sa:dba@192.168.1.230/WorkPlanManage";
+            this.conStr.Text = "mongodb://MZsa:MZdba@59.61.72.34:37088/WorkPlanManage";
+            this.conStr.Visible = false;
             // 
             // label1
             // 

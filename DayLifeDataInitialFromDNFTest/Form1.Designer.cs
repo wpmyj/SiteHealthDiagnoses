@@ -86,6 +86,31 @@
             this.button46 = new System.Windows.Forms.Button();
             this.button47 = new System.Windows.Forms.Button();
             this.button48 = new System.Windows.Forms.Button();
+            this.button49 = new System.Windows.Forms.Button();
+            this.button50 = new System.Windows.Forms.Button();
+            this.button51 = new System.Windows.Forms.Button();
+            this.AppDeviceActiveTimer = new System.Windows.Forms.Timer(this.components);
+            this.button52 = new System.Windows.Forms.Button();
+            this.button53 = new System.Windows.Forms.Button();
+            this.button54 = new System.Windows.Forms.Button();
+            this.button55 = new System.Windows.Forms.Button();
+            this.button56 = new System.Windows.Forms.Button();
+            this.button57 = new System.Windows.Forms.Button();
+            this.button58 = new System.Windows.Forms.Button();
+            this.button59 = new System.Windows.Forms.Button();
+            this.button60 = new System.Windows.Forms.Button();
+            this.button61 = new System.Windows.Forms.Button();
+            this.GetUrlQueueTimer = new System.Windows.Forms.Timer(this.components);
+            this.button62 = new System.Windows.Forms.Button();
+            this.button63 = new System.Windows.Forms.Button();
+            this.button64 = new System.Windows.Forms.Button();
+            this.button65 = new System.Windows.Forms.Button();
+            this.button66 = new System.Windows.Forms.Button();
+            this.button67 = new System.Windows.Forms.Button();
+            this.button68 = new System.Windows.Forms.Button();
+            this.button69 = new System.Windows.Forms.Button();
+            this.button70 = new System.Windows.Forms.Button();
+            this.button71 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -355,7 +380,7 @@
             // 
             // timer2
             // 
-            this.timer2.Interval = 3600000;
+            this.timer2.Interval = 10000;
             this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
             // textBox3
@@ -560,7 +585,7 @@
             // 
             // button41
             // 
-            this.button41.Location = new System.Drawing.Point(418, 516);
+            this.button41.Location = new System.Drawing.Point(418, 513);
             this.button41.Name = "button41";
             this.button41.Size = new System.Drawing.Size(113, 23);
             this.button41.TabIndex = 46;
@@ -570,7 +595,7 @@
             // 
             // button42
             // 
-            this.button42.Location = new System.Drawing.Point(283, 516);
+            this.button42.Location = new System.Drawing.Point(283, 537);
             this.button42.Name = "button42";
             this.button42.Size = new System.Drawing.Size(103, 23);
             this.button42.TabIndex = 47;
@@ -580,9 +605,9 @@
             // 
             // button43
             // 
-            this.button43.Location = new System.Drawing.Point(163, 516);
+            this.button43.Location = new System.Drawing.Point(142, 514);
             this.button43.Name = "button43";
-            this.button43.Size = new System.Drawing.Size(102, 23);
+            this.button43.Size = new System.Drawing.Size(104, 23);
             this.button43.TabIndex = 48;
             this.button43.Text = "处理工商局html";
             this.button43.UseVisualStyleBackColor = true;
@@ -592,7 +617,7 @@
             // 
             this.button44.Location = new System.Drawing.Point(13, 516);
             this.button44.Name = "button44";
-            this.button44.Size = new System.Drawing.Size(135, 23);
+            this.button44.Size = new System.Drawing.Size(106, 23);
             this.button44.TabIndex = 49;
             this.button44.Text = "解析工商局企业公告";
             this.button44.UseVisualStyleBackColor = true;
@@ -600,7 +625,7 @@
             // 
             // button45
             // 
-            this.button45.Location = new System.Drawing.Point(537, 517);
+            this.button45.Location = new System.Drawing.Point(537, 514);
             this.button45.Name = "button45";
             this.button45.Size = new System.Drawing.Size(113, 23);
             this.button45.TabIndex = 50;
@@ -610,7 +635,7 @@
             // 
             // button46
             // 
-            this.button46.Location = new System.Drawing.Point(656, 516);
+            this.button46.Location = new System.Drawing.Point(656, 514);
             this.button46.Name = "button46";
             this.button46.Size = new System.Drawing.Size(101, 23);
             this.button46.TabIndex = 50;
@@ -620,7 +645,7 @@
             // 
             // button47
             // 
-            this.button47.Location = new System.Drawing.Point(763, 515);
+            this.button47.Location = new System.Drawing.Point(763, 514);
             this.button47.Name = "button47";
             this.button47.Size = new System.Drawing.Size(113, 23);
             this.button47.TabIndex = 51;
@@ -630,7 +655,7 @@
             // 
             // button48
             // 
-            this.button48.Location = new System.Drawing.Point(283, 486);
+            this.button48.Location = new System.Drawing.Point(283, 511);
             this.button48.Name = "button48";
             this.button48.Size = new System.Drawing.Size(102, 23);
             this.button48.TabIndex = 52;
@@ -638,11 +663,274 @@
             this.button48.UseVisualStyleBackColor = true;
             this.button48.Click += new System.EventHandler(this.button48_Click);
             // 
+            // button49
+            // 
+            this.button49.Location = new System.Drawing.Point(12, 490);
+            this.button49.Name = "button49";
+            this.button49.Size = new System.Drawing.Size(107, 23);
+            this.button49.TabIndex = 53;
+            this.button49.Text = "des加密";
+            this.button49.UseVisualStyleBackColor = true;
+            this.button49.Click += new System.EventHandler(this.button49_Click);
+            // 
+            // button50
+            // 
+            this.button50.Location = new System.Drawing.Point(143, 487);
+            this.button50.Name = "button50";
+            this.button50.Size = new System.Drawing.Size(105, 23);
+            this.button50.TabIndex = 54;
+            this.button50.Text = "button50";
+            this.button50.UseVisualStyleBackColor = true;
+            this.button50.Click += new System.EventHandler(this.button50_Click);
+            // 
+            // button51
+            // 
+            this.button51.Location = new System.Drawing.Point(278, 487);
+            this.button51.Name = "button51";
+            this.button51.Size = new System.Drawing.Size(108, 23);
+            this.button51.TabIndex = 55;
+            this.button51.Text = "激活设备";
+            this.button51.UseVisualStyleBackColor = true;
+            this.button51.Click += new System.EventHandler(this.button51_Click);
+            // 
+            // AppDeviceActiveTimer
+            // 
+            this.AppDeviceActiveTimer.Interval = 5000;
+            this.AppDeviceActiveTimer.Tick += new System.EventHandler(this.AppDeviceActiveTimer_Tick);
+            // 
+            // button52
+            // 
+            this.button52.Location = new System.Drawing.Point(13, 545);
+            this.button52.Name = "button52";
+            this.button52.Size = new System.Drawing.Size(106, 23);
+            this.button52.TabIndex = 56;
+            this.button52.Text = "代理ip 切换";
+            this.button52.UseVisualStyleBackColor = true;
+            this.button52.Click += new System.EventHandler(this.button52_Click);
+            // 
+            // button53
+            // 
+            this.button53.Location = new System.Drawing.Point(142, 538);
+            this.button53.Name = "button53";
+            this.button53.Size = new System.Drawing.Size(106, 23);
+            this.button53.TabIndex = 57;
+            this.button53.Text = "荣正验证";
+            this.button53.UseVisualStyleBackColor = true;
+            this.button53.Click += new System.EventHandler(this.button53_Click);
+            // 
+            // button54
+            // 
+            this.button54.Location = new System.Drawing.Point(418, 537);
+            this.button54.Name = "button54";
+            this.button54.Size = new System.Drawing.Size(113, 23);
+            this.button54.TabIndex = 58;
+            this.button54.Text = "岗位分析数据录入";
+            this.button54.UseVisualStyleBackColor = true;
+            this.button54.Click += new System.EventHandler(this.button54_Click);
+            // 
+            // button55
+            // 
+            this.button55.Location = new System.Drawing.Point(537, 536);
+            this.button55.Name = "button55";
+            this.button55.Size = new System.Drawing.Size(113, 23);
+            this.button55.TabIndex = 59;
+            this.button55.Text = "WebClient测试";
+            this.button55.UseVisualStyleBackColor = true;
+            this.button55.Click += new System.EventHandler(this.button55_Click);
+            // 
+            // button56
+            // 
+            this.button56.Location = new System.Drawing.Point(656, 537);
+            this.button56.Name = "button56";
+            this.button56.Size = new System.Drawing.Size(101, 23);
+            this.button56.TabIndex = 60;
+            this.button56.Text = "美团";
+            this.button56.UseVisualStyleBackColor = true;
+            this.button56.Click += new System.EventHandler(this.button56_Click);
+            // 
+            // button57
+            // 
+            this.button57.Location = new System.Drawing.Point(763, 536);
+            this.button57.Name = "button57";
+            this.button57.Size = new System.Drawing.Size(113, 23);
+            this.button57.TabIndex = 61;
+            this.button57.Text = "解析WeixinHtml";
+            this.button57.UseVisualStyleBackColor = true;
+            this.button57.Click += new System.EventHandler(this.button57_Click);
+            // 
+            // button58
+            // 
+            this.button58.Location = new System.Drawing.Point(13, 569);
+            this.button58.Name = "button58";
+            this.button58.Size = new System.Drawing.Size(106, 23);
+            this.button58.TabIndex = 62;
+            this.button58.Text = "导入微信文章";
+            this.button58.UseVisualStyleBackColor = true;
+            this.button58.Click += new System.EventHandler(this.button58_Click);
+            // 
+            // button59
+            // 
+            this.button59.Location = new System.Drawing.Point(144, 565);
+            this.button59.Name = "button59";
+            this.button59.Size = new System.Drawing.Size(103, 23);
+            this.button59.TabIndex = 63;
+            this.button59.Text = "企业电话sql生成";
+            this.button59.UseVisualStyleBackColor = true;
+            this.button59.Click += new System.EventHandler(this.button59_Click);
+            // 
+            // button60
+            // 
+            this.button60.Location = new System.Drawing.Point(283, 565);
+            this.button60.Name = "button60";
+            this.button60.Size = new System.Drawing.Size(103, 23);
+            this.button60.TabIndex = 64;
+            this.button60.Text = "慧聪采购";
+            this.button60.UseVisualStyleBackColor = true;
+            this.button60.Click += new System.EventHandler(this.button60_Click);
+            // 
+            // button61
+            // 
+            this.button61.Location = new System.Drawing.Point(417, 566);
+            this.button61.Name = "button61";
+            this.button61.Size = new System.Drawing.Size(113, 23);
+            this.button61.TabIndex = 65;
+            this.button61.Text = "地图地址经纬度";
+            this.button61.UseVisualStyleBackColor = true;
+            this.button61.Click += new System.EventHandler(this.button61_Click);
+            // 
+            // GetUrlQueueTimer
+            // 
+            this.GetUrlQueueTimer.Interval = 1000;
+            this.GetUrlQueueTimer.Tick += new System.EventHandler(this.GetUrlQueueTimer_Tick);
+            // 
+            // button62
+            // 
+            this.button62.Location = new System.Drawing.Point(537, 566);
+            this.button62.Name = "button62";
+            this.button62.Size = new System.Drawing.Size(113, 23);
+            this.button62.TabIndex = 66;
+            this.button62.Text = "裁判文书";
+            this.button62.UseVisualStyleBackColor = true;
+            this.button62.Click += new System.EventHandler(this.button62_Click);
+            // 
+            // button63
+            // 
+            this.button63.Location = new System.Drawing.Point(656, 569);
+            this.button63.Name = "button63";
+            this.button63.Size = new System.Drawing.Size(101, 23);
+            this.button63.TabIndex = 67;
+            this.button63.Text = "unicode转化";
+            this.button63.UseVisualStyleBackColor = true;
+            this.button63.Click += new System.EventHandler(this.button63_Click);
+            // 
+            // button64
+            // 
+            this.button64.Location = new System.Drawing.Point(763, 569);
+            this.button64.Name = "button64";
+            this.button64.Size = new System.Drawing.Size(75, 23);
+            this.button64.TabIndex = 68;
+            this.button64.Text = "测试站点url";
+            this.button64.UseVisualStyleBackColor = true;
+            this.button64.Click += new System.EventHandler(this.button64_Click);
+            // 
+            // button65
+            // 
+            this.button65.Location = new System.Drawing.Point(13, 595);
+            this.button65.Name = "button65";
+            this.button65.Size = new System.Drawing.Size(106, 23);
+            this.button65.TabIndex = 69;
+            this.button65.Text = "处理Html成数据库";
+            this.button65.UseVisualStyleBackColor = true;
+            this.button65.Click += new System.EventHandler(this.button65_Click);
+            // 
+            // button66
+            // 
+            this.button66.Location = new System.Drawing.Point(145, 593);
+            this.button66.Name = "button66";
+            this.button66.Size = new System.Drawing.Size(102, 23);
+            this.button66.TabIndex = 70;
+            this.button66.Text = "好大夫";
+            this.button66.UseVisualStyleBackColor = true;
+            this.button66.Click += new System.EventHandler(this.button66_Click);
+            // 
+            // button67
+            // 
+            this.button67.Location = new System.Drawing.Point(283, 594);
+            this.button67.Name = "button67";
+            this.button67.Size = new System.Drawing.Size(107, 23);
+            this.button67.TabIndex = 71;
+            this.button67.Text = "材料参数生成";
+            this.button67.UseVisualStyleBackColor = true;
+            this.button67.Click += new System.EventHandler(this.button67_Click);
+            // 
+            // button68
+            // 
+            this.button68.Location = new System.Drawing.Point(417, 595);
+            this.button68.Name = "button68";
+            this.button68.Size = new System.Drawing.Size(75, 23);
+            this.button68.TabIndex = 72;
+            this.button68.Text = "主从测试";
+            this.button68.UseVisualStyleBackColor = true;
+            this.button68.Click += new System.EventHandler(this.button68_Click);
+            // 
+            // button69
+            // 
+            this.button69.Location = new System.Drawing.Point(537, 593);
+            this.button69.Name = "button69";
+            this.button69.Size = new System.Drawing.Size(113, 23);
+            this.button69.TabIndex = 73;
+            this.button69.Text = "慧采导入";
+            this.button69.UseVisualStyleBackColor = true;
+            this.button69.Click += new System.EventHandler(this.button69_Click);
+            // 
+            // button70
+            // 
+            this.button70.Location = new System.Drawing.Point(656, 593);
+            this.button70.Name = "button70";
+            this.button70.Size = new System.Drawing.Size(101, 23);
+            this.button70.TabIndex = 74;
+            this.button70.Text = "删除数据库重复数据";
+            this.button70.UseVisualStyleBackColor = true;
+            this.button70.Click += new System.EventHandler(this.button70_Click);
+            // 
+            // button71
+            // 
+            this.button71.Location = new System.Drawing.Point(763, 593);
+            this.button71.Name = "button71";
+            this.button71.Size = new System.Drawing.Size(75, 23);
+            this.button71.TabIndex = 75;
+            this.button71.Text = "url 修复";
+            this.button71.UseVisualStyleBackColor = true;
+            this.button71.Click += new System.EventHandler(this.button71_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(888, 542);
+            this.ClientSize = new System.Drawing.Size(899, 619);
+            this.Controls.Add(this.button71);
+            this.Controls.Add(this.button70);
+            this.Controls.Add(this.button69);
+            this.Controls.Add(this.button68);
+            this.Controls.Add(this.button67);
+            this.Controls.Add(this.button66);
+            this.Controls.Add(this.button65);
+            this.Controls.Add(this.button64);
+            this.Controls.Add(this.button63);
+            this.Controls.Add(this.button62);
+            this.Controls.Add(this.button61);
+            this.Controls.Add(this.button60);
+            this.Controls.Add(this.button59);
+            this.Controls.Add(this.button58);
+            this.Controls.Add(this.button57);
+            this.Controls.Add(this.button56);
+            this.Controls.Add(this.button55);
+            this.Controls.Add(this.button54);
+            this.Controls.Add(this.button53);
+            this.Controls.Add(this.button52);
+            this.Controls.Add(this.button51);
+            this.Controls.Add(this.button50);
+            this.Controls.Add(this.button49);
             this.Controls.Add(this.button48);
             this.Controls.Add(this.button47);
             this.Controls.Add(this.button46);
@@ -699,6 +987,7 @@
             this.Controls.Add(this.button1);
             this.Name = "Form1";
             this.Text = "Form12";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -764,6 +1053,31 @@
         private System.Windows.Forms.Button button46;
         private System.Windows.Forms.Button button47;
         private System.Windows.Forms.Button button48;
+        private System.Windows.Forms.Button button49;
+        private System.Windows.Forms.Button button50;
+        private System.Windows.Forms.Button button51;
+        private System.Windows.Forms.Timer AppDeviceActiveTimer;
+        private System.Windows.Forms.Button button52;
+        private System.Windows.Forms.Button button53;
+        private System.Windows.Forms.Button button54;
+        private System.Windows.Forms.Button button55;
+        private System.Windows.Forms.Button button56;
+        private System.Windows.Forms.Button button57;
+        private System.Windows.Forms.Button button58;
+        private System.Windows.Forms.Button button59;
+        private System.Windows.Forms.Button button60;
+        private System.Windows.Forms.Button button61;
+        private System.Windows.Forms.Timer GetUrlQueueTimer;
+        private System.Windows.Forms.Button button62;
+        private System.Windows.Forms.Button button63;
+        private System.Windows.Forms.Button button64;
+        private System.Windows.Forms.Button button65;
+        private System.Windows.Forms.Button button66;
+        private System.Windows.Forms.Button button67;
+        private System.Windows.Forms.Button button68;
+        private System.Windows.Forms.Button button69;
+        private System.Windows.Forms.Button button70;
+        private System.Windows.Forms.Button button71;
     }
 }
 
